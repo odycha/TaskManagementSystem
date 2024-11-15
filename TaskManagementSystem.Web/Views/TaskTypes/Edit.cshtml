@@ -1,0 +1,56 @@
+﻿@model TaskTypeEditVM
+
+@{
+	ViewData["Title"] = "Edit";
+}
+
+
+<h1>Edit Task</h1>
+<hr />
+
+<div class="row">
+	<div class="col-md-4">
+		<form asp-action="Edit">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="Id" /> <!--bind the Id with the form-->
+			<div class="form-group">
+				<label asp-for="Name" class="control-label"></label>
+				<input asp-for="Name" class="form-control" />
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+			<br/>
+			<div class="form-group">
+				<label asp-for="StartDate" class="control-label"></label>
+				<input asp-for="StartDate" class="form-control" />
+				<span asp-validation-for="StartDate" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="EndDate" class="control-label"></label>
+				<input asp-for="EndDate" class="form-control" />
+				<span asp-validation-for="EndDate" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="Department" class="control-label"></label>
+				<input asp-for="Department" class="form-control" />
+				<span asp-validation-for="Department" class="text-Danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="Description" class="control-label"></label>
+				<input asp-for="Description" class="form-control" />
+				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<br />
+			<input type="submit" value="Save Task" class="btn btn-warning" />
+			<a asp-action="Index" class="btn btn-primary">Back to List</a>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

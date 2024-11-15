@@ -1,0 +1,81 @@
+﻿@model TaskTypeCreateVM
+
+@{
+	ViewData["Title"] = "Create";
+}
+
+
+<h1>Create a new Task!</h1>
+<hr />
+<!--Bootstrap grid system-->
+<div class="row"> <!--This creates a row in Bootstrap's grid system.-->
+	<!--This creates a column inside the row that
+	takes up 4 out of 12 parts of the row on medium-sized screens
+	(and larger). This layout ensures that the form will be aligned
+	and appropriately sized on different screen sizes (responsive design).-->
+	<div class="col-md-4">
+		<!--This is a form that will submit data to the Create action in
+		the controller. The asp-action attribute indicates the method that
+		the form will post data to, which in this case is Create. The form will use
+		the HTTP POST method by default when you submit it.-->
+		<form asp-action="Create">
+			<!--This will display all validation error messages related to the entire model
+			(i.e., all fields) when there are errors in the form submission. 
+			It uses the ModelState to check for validation errors.-->
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group"> <!--This class is from Bootstrap and styles the input field to make it look consistent with the rest of the form -->
+				<label asp-for="Name" class="control-label"></label> <!--This generates a label for the Name property in your model. The asp-for="Name" is a model binding feature that binds the label to the Name property in the view model. -->
+				<input asp-for="Name" class="form-control" /> <!--This is an input field for the Name property. The asp-for="Name" binds the input field to the Name property of the model, so when the form is submitted, it will send the value of this input to the controller. -->
+				<span asp-validation-for="Name" class="text-danger"></span> <!--This displays validation error messages for the Name property, if any. It will show up below the input field if there are validation errors related to Name. -->
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="StartDate" class="control-label"></label>
+				<input asp-for="StartDate" class="form-control" />
+				<span asp-validation-for="StartDate" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="EndDate" class="control-label"></label>
+				<input asp-for="EndDate" class="form-control" />
+				<span asp-validation-for="EndDate" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="Department" class="control-label"></label>
+				<input asp-for="Department" class="form-control" />
+				<span asp-validation-for="Department" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="Description" class="control-label"></label>
+				<textarea asp-for="Description" class="form-control"></textarea>
+				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<br />
+			<div>
+				<input type="submit" value="Create Form" class="btn btn-success" />
+				<a asp-action="Index" class="btn btn-primary">Back to Tasks</a>
+			</div>
+		</form>
+	</div>
+</div>
+<br />
+
+<!--2 libs in cshtml for validation-->
+@section Scripts{
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+
+
+
+<!--1. <span> In HTML, the span tag is a generic inline container element. 
+	You use this element to wrap sections of text for styling purposes or to add 
+	attributes to a section of text without creating a new line of content. 
+	2. <br> Line break
+	3. <div> The div tag in HTML is a container that is used to group other HTML elements together and apply styles to them as a unit.
+	4. <hr/> horizontal rule
+	-->

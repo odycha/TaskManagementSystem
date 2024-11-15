@@ -1,0 +1,83 @@
+﻿@model IEnumerable<TaskTypeReadOnlyVM>
+<!--IEnumerable<T> is used over List<T> because it provides more flexibility and allows for different types of collections, making the view more adaptable.
+modelItem is just the parameter name in the lambda expression, and while it’s used for type safety, it doesn’t affect the logic here. It can be renamed without changing the result.-->
+@{
+	ViewData["Title"] = "Index";
+}
+
+<div class="button-container">
+<h1>Tasks</h1>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Task</a>
+</p>
+</div>
+
+<!--Let's clarify the difference between using just !Model.Any() and checking for both null and empty values in your collection.
+!Model.Any() vs. Model == null || !Model.Any()
+If you use only !Model.Any(), it will not account for the possibility of Model being null. This means that if Model is null, the expression will throw a NullReferenceException.-->
+@if (Model == null || !Model.Any())
+{
+    <p>No data available.</p>
+
+}
+
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EndDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Department)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Department)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+
+                        <!--asp-route-id: Defines a route parameter named id.
+                         The value of the route parameter is set to item.Id (server-side code), where item is an object in the current context, and Id is its property.Generated URL: 
+                         When the Razor view is rendered, the asp-route-id generates a URL that includes the id as a query string or route parameter, depending on the route configuration.
+                        For example:
+                        Assume the item.Id has a value of 5.
+                        If the route template for the Edit action is /ControllerName/Edit/{id}, the generated HTML link will look like this:-->
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+
+<!--1. What is modelItem?
+In General: modelItem is the parameter name used in the lambda expression. It is a placeholder for an individual item from the model when working with Razor's strongly-typed helpers like DisplayFor.
+Here: It is ignored because the actual expression (item.Name) doesn’t rely on modelItem directly.
+The helper evaluates the expression itself, not the parameter name (modelItem). That’s why modelItem could technically be replaced with any other valid name, and the behavior would remain the same.-->

@@ -1,7 +1,9 @@
-﻿using TaskManagementSystem.Application.Services.TaskTypes;
+﻿using Microsoft.AspNetCore.Authorization;
+using TaskManagementSystem.Application.Services.TaskTypes;
 
 namespace TaskManagementSystem.Web.Controllers;
 
+[Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
 public class TaskTypesController(ITaskTypesService _taskTypesService) : Controller
 {
     public async Task <IActionResult> Index()

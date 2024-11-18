@@ -2,3 +2,4 @@
 global using Microsoft.AspNetCore.Mvc;
 global using TaskManagementSystem.Data;
 global using TaskManagementSystem.Application.Models.TaskTypes;
+global using TaskManagementSystem.Common.Static;

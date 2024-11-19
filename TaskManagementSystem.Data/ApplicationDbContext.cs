@@ -20,6 +20,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 	}
 
 
-
 	public DbSet<TaskType> TaskTypes { get; set; }
+	public DbSet<WorkingDay> WorkingDays { get; set; }
+	public DbSet<TaskAllocation> TaskAllocations { get; set; }
 }

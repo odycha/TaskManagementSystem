@@ -10,11 +10,15 @@ public class TaskTypeReadOnlyVM
 	public string Name { get; set; } = string.Empty;
 	[DisplayName("Start Date")]
 	public DateOnly StartDate { get; set; }
-	[DisplayName("End Date")]
-	public DateOnly EndDate { get; set; }
 	[DisplayName("Department")]
 	public string Department { get; set; } = string.Empty;
-	[DisplayName("Description")]
+    [DisplayName("Skill level")]
+    public int SkillLevel { get; set; }
+
+    [DisplayName("Description")]
 	public string Description { get; set; } = string.Empty;
+
+    [DisplayName("Task Allocation")]
+    public bool Allocated { get; set; }
 
 }

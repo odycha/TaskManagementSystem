@@ -6,7 +6,8 @@
 
 <h1>Detailed view for Task: @Model.Name</h1>
 <hr />
-<div class="row">
+<div>
+	<dl class="row">
 	<dt class="col-sm-2">
 		@Html.DisplayNameFor(model => model.Name)
 	</dt>
@@ -22,17 +23,17 @@
 	</dt>
 	<br />
 	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.EndDate)
-	</dt>
-	<dt class="col-sm-10">
-		@Html.DisplayFor(Model => Model.EndDate)
-	</dt>
-	<br />
-	<dt class="col-sm-2">
 		@Html.DisplayNameFor(Model => Model.Department)
 	</dt>
 	<dt class="col-sm-10">
 		@Html.DisplayFor(Model => Model.Department)
+	</dt>
+	<br/>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(Model => Model.SkillLevel)
+	</dt>
+	<dt class="col-sm-10">
+		@Html.DisplayFor(Model => Model.SkillLevel)
 	</dt>
 	<br />
 	<dt class="col-sm-2">
@@ -42,6 +43,7 @@
 		<input type="text" class="form-control" value="@Model.Description" readonly />
 	</dt>
 	<br />
+	</dl>
 </div>
 
 

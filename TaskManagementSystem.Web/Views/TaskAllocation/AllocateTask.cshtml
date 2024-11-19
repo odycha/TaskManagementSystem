@@ -1,0 +1,47 @@
+﻿@model UnallocatedTaskVM
+
+@{
+	ViewData["Title"] = "AllocateTask";
+}
+
+<h1>Are you sure you want to allocate this task to an employee?</h1>
+
+<div >
+	<dl class="row">
+		<dt "col-sm-2">
+			@Html.DisplayNameFor( Model => Model.Name)
+		</dt>
+		<dt "col-sm-10">
+			@Html.DisplayFor( Model => Model.Name)
+		</dt>
+		<dt "col-sm-2">
+			@Html.DisplayNameFor(Model => Model.StartDate)
+		</dt>
+		<dt "col-sm-10">
+			@Html.DisplayFor(Model => Model.StartDate)
+		</dt>
+		<dt "col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Department)
+		</dt>
+		<dt "col-sm-10">
+			@Html.DisplayFor(Model => Model.Department)
+		</dt>
+		<dt "col-sm-2">
+			@Html.DisplayNameFor(Model => Model.SkillLevel)
+		</dt>
+		<dt "col-sm-10">
+			@Html.DisplayFor(Model => Model.SkillLevel)
+		</dt>
+		<dt "col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Description)
+		</dt>
+		<dt "col-sm-10">
+			@Html.DisplayFor(Model => Model.Description)
+		</dt>
+	</dl>
+	<form asp-action="AllocateTask">
+		<input type="hidden" asp-for="Id" />
+		<input type="submit" value="Allocate Task" class="btn btn-warning" />
+		<a asp-action="Index" class="btn btn-primary">Back to unallocated tasks</a>
+	</form>
+</div>

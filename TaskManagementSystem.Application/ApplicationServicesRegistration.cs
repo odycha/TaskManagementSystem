@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using TaskManagementSystem.Application.Services;
+using TaskManagementSystem.Application.Services.TaskAllocations;
 using TaskManagementSystem.Application.Services.TaskTypes;
+using TaskManagementSystem.Application.Services.WorkingDays;
 
 
 namespace TaskManagementSystem.Application;
@@ -15,7 +15,10 @@ public static class ApplicationServicesRegistration
         //Here we also map the services
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
         services.AddScoped<ITaskTypesService, TaskTypesService>();
+        services.AddScoped<IWorkingDaysService, WorkingDaysService>();
+        services.AddScoped<ITaskAllocationsService, TaskAllocationsService>();
         services.AddTransient<IEmailSender, EmailSender>();
+        services.AddHttpContextAccessor();
         return services;
     }
 }

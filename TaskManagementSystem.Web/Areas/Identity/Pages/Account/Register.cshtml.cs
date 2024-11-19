@@ -109,9 +109,20 @@ namespace TaskManagementSystem.Web.Areas.Identity.Pages.Account
             [Display(Name = "Date Of Birth")]
             public DateOnly DateOfBirth { get; set; }
             [Required]
+            [Display(Name = "Role")]
             public string RoleName { get; set; }
-            public string[] RoleNames { get; set; }
-        }
+
+			[Required]
+            [Display(Name = "Department")]
+            public string DepartmentName { get; set; }
+
+			[Required]
+            [Display(Name = "Skill Level")]
+            [Range(1, 10, ErrorMessage = "Skill level must be between 1 and 10.")]
+			public int SkillLevel { get; set; }
+			public string[] RoleNames { get; set; }
+            public string[] DepartmentNames { get; set; }
+		}
 
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -123,7 +134,8 @@ namespace TaskManagementSystem.Web.Areas.Identity.Pages.Account
                 .Where(q => q != "Administrator")
                 .ToArrayAsync();
             Input.RoleNames = roles;
-        }
+			Input.DepartmentNames = Departments.DepartmentNames;
+		}
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
@@ -138,6 +150,8 @@ namespace TaskManagementSystem.Web.Areas.Identity.Pages.Account
                 user.DateOfBirth = Input.DateOfBirth;
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
+                user.DepartmentName = Input.DepartmentName;
+                user.SkillLevel = Input.SkillLevel;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -189,7 +203,8 @@ namespace TaskManagementSystem.Web.Areas.Identity.Pages.Account
                 .Where(q => q != "Administrator")
                 .ToArrayAsync();
             Input.RoleNames = roles;
-            return Page();
+			Input.DepartmentNames = Departments.DepartmentNames;
+			return Page();
         }
 
         private ApplicationUser CreateUser()

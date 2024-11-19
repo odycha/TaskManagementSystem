@@ -3,6 +3,9 @@
 @{
 	ViewData["Title"] = "Create";
 }
+@{
+	string[] DepartmentNames = Departments.DepartmentNames;
+}
 
 
 <h1>Create a new Task!</h1>
@@ -35,16 +38,21 @@
 				<span asp-validation-for="StartDate" class="text-danger"></span>
 			</div>
 			<br />
-			<div class="form-group">
-				<label asp-for="EndDate" class="control-label"></label>
-				<input asp-for="EndDate" class="form-control" />
-				<span asp-validation-for="EndDate" class="text-danger"></span>
-			</div>
+			<label asp-for="Department" class="control-label"></label>
+			@foreach (var depName in DepartmentNames)
+			{
+				<div class="form-check">
+					<input class="form-check-input" type="radio" asp-for="Department" value="@depName">
+					<label class="form-check-label" asp-for="Department">
+						@depName
+					</label>
+				</div>
+			}
 			<br />
 			<div class="form-group">
-				<label asp-for="Department" class="control-label"></label>
-				<input asp-for="Department" class="form-control" />
-				<span asp-validation-for="Department" class="text-danger"></span>
+				<label asp-for="SkillLevel" class="control-label"></label>
+				<input asp-for="SkillLevel" class="form-control" />
+				<span asp-validation-for="SkillLevel" class="text-danger"></span>
 			</div>
 			<br />
 			<div class="form-group">
@@ -54,7 +62,7 @@
 			</div>
 			<br />
 			<div>
-				<input type="submit" value="Create Form" class="btn btn-success" />
+				<input type="submit" value="Create Task" class="btn btn-success" />
 				<a asp-action="Index" class="btn btn-primary">Back to Tasks</a>
 			</div>
 		</form>

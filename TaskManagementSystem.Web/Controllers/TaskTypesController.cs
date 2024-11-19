@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using TaskManagementSystem.Application.Services.TaskTypes;
 
 namespace TaskManagementSystem.Web.Controllers;
@@ -99,5 +101,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         return RedirectToAction(nameof(Index));
     }
 
+    //Edit actions don't require two distinct methods (Edit and EditConfirmed) because the GET and POST are inherently tied to the same logical operation: updating data.
+    //Delete actions, being more destructive, require a confirmation step and thus benefit from the two-method approach to separate the "intent to delete" from the "action of deletion."
 
 }

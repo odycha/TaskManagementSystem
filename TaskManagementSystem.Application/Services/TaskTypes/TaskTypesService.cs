@@ -37,7 +37,7 @@ public class TaskTypesService(ApplicationDbContext _context, IMapper _mapper) : 
 		return viewData;
 	}
 
-	//TODO: Remove
+
 	public async Task Remove(int id)
 	{
 		var data = await _context.TaskTypes.FirstOrDefaultAsync(x => x.Id == id);

@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManagementSystem.Data;
 
@@ -24,5 +25,6 @@ public class TaskType
     //we edited the LeaveTypes so we can access the related TaskAllocation
     //? there might not be any related ones
     public TaskAllocation? TaskAllocation { get; set; }
+
 
 }

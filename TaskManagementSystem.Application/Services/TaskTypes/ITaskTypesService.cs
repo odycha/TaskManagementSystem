@@ -10,4 +10,5 @@ public interface ITaskTypesService
     Task<T?> Get<T>(int id) where T : class;
     Task Remove(int id);
 	Task Edit(TaskTypeEditVM model);
+	Task<TaskTypeReadOnlyVM> Get(int id);
 }

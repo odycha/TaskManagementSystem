@@ -28,7 +28,8 @@
                 <span asp-validation-for="Input.LastName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.DateOfBirth" class="form-control" aria-required="true" placeholder="" />
+                <!--Added type="text" verride the browser's native datepicker behavior. You can achieve this by changing the input type for the DateOfBirth field from type="date" (which triggers the built-in picker) to type="text"-->
+                <input asp-for="Input.DateOfBirth" type="text" class="form-control" aria-required="true" placeholder="Select Date" id="DateOfBirth" />
                 <label asp-for="Input.DateOfBirth">Date Of Birth</label>
                 <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
             </div>
@@ -82,4 +83,18 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Initialize jQuery datepicker on the #DateOfBirth field
+            $("#DateOfBirth").datepicker({
+                dateFormat: "mm/dd/yy", // Customize as needed
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-100:+0" // Allow past 100 years
+            });
+        });
+    </script>
 }
+
+

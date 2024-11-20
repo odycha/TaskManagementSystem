@@ -5,7 +5,7 @@ using AutoMapper;
 
 namespace TaskManagementSystem.Application.Services.TaskTypes;
 
-public class TaskTypesService(ApplicationDbContext _context, IMapper _mapper) : ITaskTypesService
+public class TaskTypesService(ApplicationDbContext _context, IMapper _mapper, IUserService _userService) : ITaskTypesService
 {
 	public async Task<List<TaskTypeReadOnlyVM>> GetAll()
 	{
@@ -28,13 +28,55 @@ public class TaskTypesService(ApplicationDbContext _context, IMapper _mapper) : 
         //returns a specific record
     public async Task <T?> Get<T>(int id) where T : class
 	{
-		var data = await _context.TaskTypes.FirstOrDefaultAsync(x => x.Id == id);
+		var data = await _context.TaskTypes
+			.Include(x => x.TaskAllocation)
+			.FirstOrDefaultAsync(x => x.Id == id);
 		if(data == null)
 		{
 			return null;
 		}
 		var viewData = _mapper.Map<T>(data);
 		return viewData;
+	}
+
+
+	public async Task<TaskTypeReadOnlyVM> Get(int id) 
+	{
+		var data = await _context.TaskTypes
+			.Include(x => x.TaskAllocation)
+			.FirstOrDefaultAsync(x => x.Id == id);
+		if (data == null)
+		{
+			return null;
+		}
+		if (data.Allocated == true)
+		{
+			var employee = await _userService.GetUserById(data.TaskAllocation.EmployeeId);
+			var viewData = new TaskTypeReadOnlyVM
+			{
+				Id = data.Id,
+				Name = data.Name,
+				StartDate = data.StartDate,
+				Department = data.Department,
+				Description = data.Description,
+				SkillLevel = data.SkillLevel,
+				Allocated = data.Allocated,
+				employeeListVm = new EmployeeListVM
+				{
+					FirstName = employee.FirstName,
+					LastName = employee.LastName,
+					DepartmentName = employee.DepartmentName,
+					SkillLevel = employee.SkillLevel,
+					Email = employee.Email
+				}
+			};
+			return viewData;
+		}
+		else
+		{
+			var viewData = _mapper.Map<TaskTypeReadOnlyVM>(data);
+			return viewData;
+		}
 	}
 
 

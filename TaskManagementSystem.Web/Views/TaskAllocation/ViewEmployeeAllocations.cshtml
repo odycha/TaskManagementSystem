@@ -1,0 +1,98 @@
+﻿@model EmployeeAllocationVM
+
+@{
+	ViewData["Title"] = "ViewEmployeeAllocations";
+}
+
+<h1> Here are the task allocations for the employee : @Model.FirstName @Model.LastName</h1>
+<br />
+
+<div>
+	<dl class="row">
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.FirstName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.FirstName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.LastName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.LastName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.DateOfBirth)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.DateOfBirth)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.DepartmentName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.DepartmentName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.SkillLevel)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.SkillLevel)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Email)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Email)
+		</dd>
+	</dl>
+</div>
+
+@if (Model.TaskAllocations.Any())
+{
+	@foreach(var allocation in Model.TaskAllocations)
+	{
+		<table class="table">
+			<thead>
+				<!--TODO: Html.DisplayNameFor doesnt work here why??-->
+				<th>
+					Date
+				</th>
+				<th>
+					Task
+				</th>
+				<th>
+					Department
+				</th>
+				<th>
+					Skill level
+				</th>
+				<th>
+					Description
+				</th>
+
+			</thead>
+			<tbody>
+				<td>
+					@allocation.WorkingDay.Day
+				</td>
+				<td>
+					@allocation.TaskType.Name
+				</td>
+				<td>
+					@allocation.TaskType.Department
+				</td>
+				<td>
+					@allocation.TaskType.SkillLevel
+				</td>
+				<td>
+					@allocation.TaskType.Description
+				</td>
+			</tbody>
+		</table>
+	}
+}
+else
+{
+	<h1>Currently the employee doesnt have any task allocations</h1>
+}

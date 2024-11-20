@@ -20,5 +20,6 @@ public class TaskTypeReadOnlyVM
 
     [DisplayName("Task Allocation")]
     public bool Allocated { get; set; }
+	public EmployeeListVM employeeListVm { get; set; } = new EmployeeListVM();
 
 }

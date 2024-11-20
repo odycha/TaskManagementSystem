@@ -35,4 +35,15 @@
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
+
+	<script>
+		$(function () {
+			$("#Day").datepicker({
+				dateFormat: "DD, d MM, yy",
+				changeMonth: true,
+				changeYear: true,
+				yearRange: "+0:+10"
+			});
+		});
+	</script>
 }

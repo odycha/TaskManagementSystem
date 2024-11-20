@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using TaskManagementSystem.Application.Services.TaskAllocations;
 using TaskManagementSystem.Application.Services.TaskTypes;
+using TaskManagementSystem.Application.Services.Users;
 using TaskManagementSystem.Application.Services.WorkingDays;
 
 
@@ -17,7 +18,8 @@ public static class ApplicationServicesRegistration
         services.AddScoped<ITaskTypesService, TaskTypesService>();
         services.AddScoped<IWorkingDaysService, WorkingDaysService>();
         services.AddScoped<ITaskAllocationsService, TaskAllocationsService>();
-        services.AddTransient<IEmailSender, EmailSender>();
+        services.AddScoped<IUserService, UserService>();
+		services.AddTransient<IEmailSender, EmailSender>();
         services.AddHttpContextAccessor();
         return services;
     }

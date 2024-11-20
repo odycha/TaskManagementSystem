@@ -20,7 +20,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         {
             return NotFound();
         }
-        var viewData = await _taskTypesService.Get<TaskTypeReadOnlyVM>(id.Value);
+        var viewData = await _taskTypesService.Get(id.Value);
         if (viewData == null)
         {
             return NotFound();

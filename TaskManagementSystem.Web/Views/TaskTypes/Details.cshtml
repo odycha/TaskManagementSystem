@@ -45,7 +45,43 @@
 	<br />
 	</dl>
 </div>
-
+@if (Model.Allocated == true)
+{
+	<hr />
+	<h1>The task is allocated to the following employee:</h1>
+	<br />
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(Model => Model.employeeListVm.FirstName)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(Model => Model.employeeListVm.FirstName)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(Model => Model.employeeListVm.LastName)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(Model => Model.employeeListVm.LastName)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(Model => Model.employeeListVm.DepartmentName)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(Model => Model.employeeListVm.DepartmentName)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(Model => Model.employeeListVm.SkillLevel)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(Model => Model.employeeListVm.SkillLevel)
+	</dd>
+	<dt class="col-sm-2">
+		@Html.DisplayNameFor(Model => Model.employeeListVm.Email)
+	</dt>
+	<dd class="col-sm-10">
+		@Html.DisplayFor(Model => Model.employeeListVm.Email)
+	</dd>
+	<br />
+}
 
 <a asp-action="Index" class="btn btn-primary">Back to List</a>
 

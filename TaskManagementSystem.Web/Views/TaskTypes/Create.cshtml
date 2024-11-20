@@ -73,7 +73,25 @@
 <!--2 libs in cshtml for validation-->
 @section Scripts{
 	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+	<script>
+		$(function () {
+			$("#StartDate").datepicker({
+				dateFormat: "DD, d MM, yy",
+				changeMonth: true,
+				changeYear: true,
+				yearRange: "+0:+10"
+			});
+		});
+	</script>
 }
+
+
+
+
+
+
 
 
 

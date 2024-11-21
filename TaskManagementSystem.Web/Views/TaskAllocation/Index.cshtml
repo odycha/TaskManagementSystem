@@ -4,7 +4,20 @@
 	ViewData["Title"] = "Index";
 }
 
-<h1>Unallocated Tasks</h1>
+
+@if (ViewBag.noSuitableEmployee == true)
+{
+	<div class="alert alert-warning">
+		<strong>Notice:</strong> There is no suitable employee for the Task: @ViewBag.taskName. Try editing your Task or unallocating an employee.
+	</div>
+	<br />
+	<h1>Unallocated Tasks</h1>
+}
+else
+{
+	<h1>Unallocated Tasks</h1>
+}
+
 
 @if (Model == null || !Model.Any())
 {
@@ -42,7 +55,7 @@ else
 							@Html.DisplayFor(modelItem => item.Name)
 					</td>
 					<td>
-							@Html.DisplayFor(modelItem => item.StartDate)
+							@Html.DisplayFor(modelItem => item.StartDateFormatted)
 					</td>
 					<td>
 							@Html.DisplayFor(modelItem => item.Department)

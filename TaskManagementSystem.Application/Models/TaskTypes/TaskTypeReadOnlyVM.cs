@@ -10,6 +10,7 @@ public class TaskTypeReadOnlyVM
 	public string Name { get; set; } = string.Empty;
 	[DisplayName("Start Date")]
 	public DateOnly StartDate { get; set; }
+	public string StartDateFormatted => StartDate.ToString("dd-MM-yyyy");
 	[DisplayName("Department")]
 	public string Department { get; set; } = string.Empty;
     [DisplayName("Skill level")]

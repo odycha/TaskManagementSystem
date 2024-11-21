@@ -8,5 +8,6 @@ public class WorkingDayReadOnlyVM
     public int Id { get; set; }
     [DisplayName("Working Day")]
     public DateOnly Day { get; set; }
-    public string Comments { get; set; } = string.Empty;
+	public string DayFormatted => Day.ToString("yyyy-MM-dd");
+	public string Comments { get; set; } = string.Empty;
 }

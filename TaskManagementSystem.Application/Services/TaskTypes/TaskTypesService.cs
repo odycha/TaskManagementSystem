@@ -94,6 +94,17 @@ public class TaskTypesService(ApplicationDbContext _context, IMapper _mapper, IU
 	{
 		//converting to data model
 		var taskType = _mapper.Map<TaskType>(model);
+        //if task was allocated - we are deleting the allocation
+        //if (taskType.Allocated == true) - i cant type that because when the form is submitted the allocated is defaulted to false
+		var allocation = await _context.TaskAllocations
+			.Where(a => a.TaskTypeId == taskType.Id)
+			.SingleOrDefaultAsync();
+		if(allocation != null)
+		{
+			_context.Remove(allocation);
+			await _context.SaveChangesAsync();
+        }
+	
 		_context.Update(taskType);
 		await _context.SaveChangesAsync();
 	}

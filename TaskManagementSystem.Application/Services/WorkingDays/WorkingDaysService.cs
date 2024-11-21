@@ -15,6 +15,14 @@ public class WorkingDaysService(ApplicationDbContext _context, IMapper _mapper) 
 
     public async Task Create(WorkingDayCreateVM model)
     {
+        var sameDateWorkingDay = await _context.WorkingDays
+            .Where(w => w.Day == model.Day)
+            .AnyAsync();
+        if(sameDateWorkingDay == true)
+        {
+            //TODO: MAKE A NEW EXCEPTION CLASS?
+            throw new InvalidOperationException("Same date exists");
+        }
         var WorkingDay = _mapper.Map<WorkingDay>(model);
         _context.Add(WorkingDay);
         await _context.SaveChangesAsync();

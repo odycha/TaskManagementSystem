@@ -7,13 +7,15 @@ namespace TaskManagementSystem.Web.Controllers;
 public class TaskAllocationController(ITaskAllocationsService _taskAllocationService) : Controller
 {
 	//see all unallocated tasks
-	public async Task<IActionResult> Index()
+	public async Task<IActionResult> Index(bool noSuitableEmployee = false, string? taskName = null)
 	{
 		var unallocatedTasks = await _taskAllocationService.GetAllUnallocatedTasks();
 		if (unallocatedTasks == null)
 		{
 			return NotFound();
 		}
+		ViewBag.noSuitableEmployee = noSuitableEmployee;
+		ViewBag.taskName = taskName;
 		return View(unallocatedTasks);
 	}
 
@@ -38,7 +40,19 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	[AutoValidateAntiforgeryToken]
 	public async Task<IActionResult> AllocateTask(int id)
 	{
-		await _taskAllocationService.AllocateTask(id);
+		try 
+		{ 
+			await _taskAllocationService.AllocateTask(id);
+		}
+		catch(WorkingDayNotFoundException e)
+		{
+			return RedirectToAction("Create", "WorkingDays", new { comingFromAllocation = true , workingDayDate = e.MissingDate });
+        }
+		catch (NoSuitableEmployeeException e)
+		{
+			return RedirectToAction("Index", new { noSuitableEmployee = true , taskName =  e.Message });
+		}
+
 		return RedirectToAction(nameof(Index));
 	}
 	
@@ -48,6 +62,13 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	{
 		var employees = await _taskAllocationService.GetEmployees();
 		return View(employees);
+	}
+
+	[Authorize(Roles = Roles.Employee)]
+	public async Task<IActionResult> ViewSignedInEmployeeAllocations()
+	{
+		var allocations = await _taskAllocationService.GetEmployeeAllocations();
+		return View(allocations);
 	}
 
 	//View allocations for a specific employee
@@ -73,6 +94,13 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 
 
 //TODO: View all allocations per date
-//TODO: View allocations for signed in employee
-//TODO: Unallocate task
-//TODO ADMIN VIEW EMPLOYEE LIST AND ALLOCATIONS PER EMPLOYEE - LIKE EmployeeAllocationVM
+
+//TODO: Unallocate task AT TASKS PAGE
+
+//TODO: WHEN LOOKING AT AN EMPLOYEE EXCEPT FROM VIEWING ALLOCATIONS - SEE ALSO A CALENDAR WITH HIS AVAILABILITY
+
+//TODO: SHOW WORKING DAYS IN A CALENDAR 
+
+//TODO: SHOW TASKS IN A CALENDAR PER MONTH AND PER DEPARTMENT
+
+//TODO: When we edit a task but we dont change anything and press save than i mustnt become unallocated

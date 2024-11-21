@@ -10,7 +10,8 @@ public class UnallocatedTaskVM
     public string Name { get; set; } = string.Empty;
     [DisplayName("Start Date")]
     public DateOnly StartDate { get; set; }
-    [DisplayName("Department")]
+	public string StartDateFormatted => StartDate.ToString("dd-MM-yyyy");
+	[DisplayName("Department")]
     public string Department { get; set; } = string.Empty;
     [DisplayName("Skill level")]
     public int SkillLevel { get; set; }

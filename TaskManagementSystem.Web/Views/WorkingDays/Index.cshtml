@@ -1,11 +1,10 @@
 ﻿@model IEnumerable<WorkingDayReadOnlyVM>
 
 @{
-	ViewData["Title"] = "Index";
+    ViewData["Title"] = "Working Dates Summary";
 }
 
-
-<h1>Working Dates summary</h1>
+<h1>Working Dates Summary</h1>
 
 <div class="button-container">
     @if (User.IsInRole(Roles.Administrator))
@@ -18,47 +17,45 @@
 
 @if (Model == null || !Model.Any())
 {
-	<p>No data available.</p>
+    <p>No data available.</p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Day)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Comments)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Day)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Comments)
-                    </td>
+    <div id="calendar"></div>
+}
 
-                    <td>
-                        <a asp-action="Comments" asp-route-id="@item.Id" class="btn btn-success">Details</a>
-                        @if (User.IsInRole(Roles.Administrator))
-                        {
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                        }
-                        <!--asp-route-id: Defines a route parameter named id.
-                         The value of the route parameter is set to item.Id (server-side code), where item is an object in the current context, and Id is its property.Generated URL:
-                         When the Razor view is rendered, the asp-route-id generates a URL that includes the id as a query string or route parameter, depending on the route configuration.
-                        For example:
-                        Assume the item.Id has a value of 5.
-                        If the route template for the Edit action is /ControllerName/Edit/{id}, the generated HTML link will look like this:-->
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Reference to the calendar element
+            var calendarEl = document.getElementById('calendar');
+
+            // Convert the Model data to JSON for FullCalendar
+            var events = @Html.Raw(Json.Serialize(
+        Model.Select(item => new
+        {
+            title = item.Comments,     // Display comments as the event title
+            start = item.DayFormatted  // Date for the event (ensure DayFormatted is ISO 8601 formatted)
+        })
+        ));
+
+            console.log(events);  // Debug: Check the serialized events
+
+            // Initialize the calendar
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth', // Default view
+                events: events,             // Bind the events
+                headerToolbar: {            // Calendar header configuration
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                }
+                
+
+            });
+
+            // Render the calendar
+            calendar.render();
+        });
+    </script>
 }

@@ -4,10 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] Task Management System</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- jQuery UI  -->
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.min.css" />
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TaskManagementSystem.Web.styles.css" asp-append-version="true" />
+    
 </head>
 <body>
     <header>
@@ -30,6 +34,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="WorkingDays" asp-action="Index">Working Days</a>
                         </li>
+                        @if (User.IsInRole(Roles.Employee))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="TaskAllocation" asp-action="ViewSignedInEmployeeAllocations">My Task Allocations</a>
+                            </li>
+                        }
                         @if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
                         {
                             <li class="nav-item dropdown">
@@ -65,7 +75,20 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+
+<!--Dependencies:
+
+jQuery UI and Bootstrap rely on jQuery, so it must load first.
+FullCalendar doesn’t depend on jQuery but needs the DOM ready.
+Overriding Styles:
+
+CSS styles should follow a cascade order where library-specific styles (e.g., FullCalendar) override generic ones (e.g., Bootstrap).
+Conflict Prevention:
+
+Loading libraries in the wrong order can result in missing functions or styles being overridden incorrectly.-->

@@ -13,6 +13,7 @@ public class EmployeeListVM
 	[Display(Name = "Last Name")]
 	public string LastName { get; set; } = string.Empty;
 	public DateOnly DateOfBirth { get; set; }
+	public string DateOfBirthFormatted => DateOfBirth.ToString("dd-MM-yyyy");
 	public string DepartmentName { get; set; } = string.Empty;
 	public int SkillLevel { get; set; }
 

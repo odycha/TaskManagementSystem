@@ -3,9 +3,27 @@
 @{
 	ViewData["Title"] = "Create";
 }
+<!-- Display the message if coming from allocation -->
+@if (ViewBag.ComingFromAllocation == true)
+{
+	<div class="alert alert-warning">
+		<strong>Notice:</strong> You can't allocate this task because there is no working day available for the date: @ViewBag.workingDayDate . Please create one first!
+	</div>
+}
+else
+{
+	<h1>Create a new working day!</h1>
+}
 
-<h1>Create a new working day!</h1>
 <hr />
+@if (ViewBag.sameDateExists != null && (bool)ViewBag.sameDateExists) //Since ViewBag.sameDateExists is dynamically typed, you should cast it to bool when accessing it in the view ((bool)ViewBag.sameDateExists).
+{
+	<div class="alert alert-warning">
+		<strong>Notice:</strong> A Work day already exists for this date. Select another date or edit the existing one.
+	</div>
+}
+
+
 
 <div class="row">
 	<div class="col-md-4">

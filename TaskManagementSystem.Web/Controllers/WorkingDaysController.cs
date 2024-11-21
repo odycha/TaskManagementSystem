@@ -2,7 +2,7 @@
 using TaskManagementSystem.Application.Models.WorkingDays;
 
 namespace TaskManagementSystem.Web.Controllers;
-[Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+
 public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Controller
 {
     public async Task<IActionResult> Index()
@@ -10,26 +10,43 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
         var viewData = await _workingDaysService.GetAll();
         return View(viewData);
     }
-
-    //Get
-    public async Task<IActionResult> Create()
+	[Authorize(Roles = Roles.Administrator)]
+	//Get
+	public async Task<IActionResult> Create(
+        bool comingFromAllocation = false, 
+        DateOnly? workingDayDate = null)
     {
+        ViewBag.ComingFromAllocation = comingFromAllocation;
+        ViewBag.workingDayDate = workingDayDate;
+        
         return View();
     }
+
     //Post
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(WorkingDayCreateVM workingDayCreate)
+	[Authorize(Roles = Roles.Administrator)]
+	public async Task<IActionResult> Create(WorkingDayCreateVM workingDayCreate)
     {
         if (ModelState.IsValid)
         {
-            _workingDaysService.Create(workingDayCreate);
+            try
+            {
+               await _workingDaysService.Create(workingDayCreate);
+				
+			}
+            catch(Exception e)
+            {
+				ViewBag.sameDateExists = true;
+				return View(workingDayCreate);
+            }
             return (RedirectToAction(nameof(Index)));
-        }
+		}
         return View(workingDayCreate);
     }
 
 	//Get
+	[Authorize(Roles = Roles.Administrator)]
 	public async Task<IActionResult> Delete(int? id)
 	{
         if(id == null)
@@ -46,6 +63,7 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
 	//Post
 	[HttpPost, ActionName("Delete")]
 	[ValidateAntiForgeryToken]
+	[Authorize(Roles = Roles.Administrator)]
 	public async Task<IActionResult> DeleteConfirmed(int id)
 	{
         await _workingDaysService.Remove(id);
@@ -57,3 +75,8 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
 
 
 
+//TODO: IF A WORKING DAY EXISTS FOR DATE YOU CANT CREATE A SECOND ONE
+
+//TODO: ONCLICK IN CALENDAR SHOW WORKING DAY DETAILS
+
+//TODO: FOR A WORKING DAY ADD WORKING HOURS AND MAYBE A TASK COULD BE ASSIGNED TO A TIME SLOT EG: 0900-1200

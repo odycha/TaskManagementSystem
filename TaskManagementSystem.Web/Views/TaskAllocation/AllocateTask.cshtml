@@ -1,4 +1,4 @@
-﻿@model UnallocatedTaskVM
+﻿@model TaskTypeReadOnlyVM
 
 @{
 	ViewData["Title"] = "AllocateTask";
@@ -11,33 +11,33 @@
 		<dt "col-sm-2">
 			@Html.DisplayNameFor( Model => Model.Name)
 		</dt>
-		<dt "col-sm-10">
+		<dd "col-sm-10">
 			@Html.DisplayFor( Model => Model.Name)
-		</dt>
+		</dd>
 		<dt "col-sm-2">
 			@Html.DisplayNameFor(Model => Model.StartDate)
 		</dt>
-		<dt "col-sm-10">
+		<dd "col-sm-10">
 			@Html.DisplayFor(Model => Model.StartDate)
-		</dt>
+		</dd>
 		<dt "col-sm-2">
 			@Html.DisplayNameFor(Model => Model.Department)
 		</dt>
-		<dt "col-sm-10">
+		<dd "col-sm-10">
 			@Html.DisplayFor(Model => Model.Department)
-		</dt>
+		</dd>
 		<dt "col-sm-2">
 			@Html.DisplayNameFor(Model => Model.SkillLevel)
 		</dt>
-		<dt "col-sm-10">
+		<dd "col-sm-10">
 			@Html.DisplayFor(Model => Model.SkillLevel)
-		</dt>
+		</dd>
 		<dt "col-sm-2">
 			@Html.DisplayNameFor(Model => Model.Description)
 		</dt>
-		<dt "col-sm-10">
+		<dd "col-sm-10">
 			@Html.DisplayFor(Model => Model.Description)
-		</dt>
+		</dd>
 	</dl>
 	<form asp-action="AllocateTask">
 		<input type="hidden" asp-for="Id" />

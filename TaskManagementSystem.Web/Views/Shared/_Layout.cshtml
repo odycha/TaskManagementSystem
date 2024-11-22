@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] Task Management System</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <!-- jQuery UI  -->
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.min.css" />
     <!-- Custom CSS -->
@@ -48,7 +49,6 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item" asp-controller="TaskTypes" asp-action="Index">Tasks</a></li>
-                                    <li><a class="dropdown-item" asp-controller="TaskAllocation" asp-action="Index">Unallocated Tasks</a></li>
                                     @if (User.IsInRole(Roles.Administrator)){
                                     <li><a class="dropdown-item" asp-controller="TaskAllocation" asp-action="ViewEmployees">View Employees</a></li>
                                     }

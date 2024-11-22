@@ -7,8 +7,8 @@ namespace TaskManagementSystem.Application.MappingProfiles
 	{
 		public TaskAllocationAutoMapperProfile()
 		{
-			CreateMap<TaskType, UnallocatedTaskVM>();
-			CreateMap<TaskType, UnallocatedTaskVM>().ReverseMap();
+			CreateMap<TaskType, TaskTypeReadOnlyVM>();
+			CreateMap<TaskType, TaskTypeReadOnlyVM>().ReverseMap();
 			CreateMap<ApplicationUser, EmployeeListVM>();
 			CreateMap<TaskAllocation, EmployeeAllocationVM>();
 			CreateMap<TaskAllocation, TaskAllocationVM>();

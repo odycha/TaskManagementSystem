@@ -5,87 +5,235 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
 	ViewData["Title"] = "Index";
 }
 
-<div class="button-container">
-<h1>Tasks</h1>
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New Task</a>
-</p>
+<div class="d-flex flex-wrap align-items-center gap-3">
+    <h1>Tasks</h1>
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Create New Task</a>
+    </p>
 </div>
 
+<!--No suitable employee for allocating a specific Task-->
+@if (ViewBag.noSuitableEmployee == true)
+{
+    <div class="alert alert-warning">
+        <strong>Notice:</strong> There is no suitable employee for the Task: @ViewBag.taskName. Try editing your Task or unallocating an employee.
+    </div>
+    <br />
+    <h1>Unallocated Tasks</h1>
+}
+
+
+<form asp-action="Index" method="get">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+
+        <div class="form-group">
+            <label for="fromDate" class="control-label">From Date</label>
+            <div class="d-flex align-items-center gap-2">
+                <input id="fromDate" class="form-control fromDate" name="fromDate" style="width: 240px;"
+                       value="@ViewBag.fromDate?.ToString("dddd, d MMMM, yyyy")" />
+                <button type="button" class="btn btn-secondary clear-date" data-target="#fromDate">C</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="toDate" class="control-label">To Date</label>
+        <div class="d-flex align-items-center gap-2">
+            <input id="toDate" class="form-control toDate" name="toDate" style="width: 240px;"
+                   value="@ViewBag.toDate?.ToString("dddd, d MMMM, yyyy")" />
+            <button type="button" class="btn btn-secondary clear-date" data-target="#toDate">C</button>
+        </div>
+    </div>
+
+
+        <!-- Department Dropdown -->
+        <div class="form-group">
+            <label for="department" class="control-label">Department</label>
+            <select class="form-control" id="department" name="department">
+                <option value="" selected="@(ViewBag.department == null)">All Departments</option>
+                <option value="Development" selected="@(ViewBag.department == "Development")">Development</option>
+                <option value="IT Support" selected="@(ViewBag.department == "IT Support")">IT Support</option>
+                <option value="Marketing" selected="@(ViewBag.department == "Marketing")">Marketing</option>
+            </select>
+        </div>
+
+        <!-- Minimum Skill Level Dropdown -->
+       <div class="form-group">
+            <label for="minimumSkillLevel" class="control-label">Minimum Skill Level</label>
+            <select class="form-control" id="minimumSkillLevel" name="minimumSkillLevel">
+                <option value="" selected="@(ViewBag.minimumSkillLevel == null)">Any Skill Level</option>
+                @for (int i = 1; i <= 10; i++)
+                {
+                    <option value="@i" selected="@(ViewBag.minimumSkillLevel == i)">@i</option>
+                }
+            </select>
+        </div>
+
+        <!-- Allocation Dropdown -->
+        <div class="form-group">
+            <label for="isAllocatted" class="control-label">Allocation</label>
+            <select class="form-control" id="isAllocatted" name="isAllocatted">
+                <option value="" selected="@(ViewBag.isAllocatted == null)">All</option>
+                <option value="true" selected="@(ViewBag.isAllocatted == true)">Allocated</option>
+                <option value="false" selected="@(ViewBag.isAllocatted == false)">Not Allocated</option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <label class="form-label d-block" style="visibility: hidden;">Filter</label>
+            <button type="submit" class="btn btn-success">Filter</button>
+        </div>
+    </div>
+</form>
+
+<br />
 <!--Let's clarify the difference between using just !Model.Any() and checking for both null and empty values in your collection.
 !Model.Any() vs. Model == null || !Model.Any()
 If you use only !Model.Any(), it will not account for the possibility of Model being null. This means that if Model is null, the expression will throw a NullReferenceException.-->
 @if (Model == null || !Model.Any())
 {
-    <p>No data available.</p>
+    <h1>No Tasks available.</h1>
 
 }
 
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.StartDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Department)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.SkillLevel)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Allocated)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <div class="table-responsive">  <!--Wrap the table in a div to ensure responsiveness on smaller screens-->
+        <table class="table table-hover">
+            <thead>
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.StartDateFormatted)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Department)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SkillLevel)
-                    </td>
-                    <td>
-                        @if (item.Allocated == false)
-						{
-							<span class="badge rounded-pill bg-danger">Unallocated</span>
-						}
-						else
-						{
-							<span class="badge rounded-pill bg-success">Allocated</span>
-						}
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-    
-                        <!--asp-route-id: Defines a route parameter named id.
-                         The value of the route parameter is set to item.Id (server-side code), where item is an object in the current context, and Id is its property.Generated URL: 
-                         When the Razor view is rendered, the asp-route-id generates a URL that includes the id as a query string or route parameter, depending on the route configuration.
-                        For example:
-                        Assume the item.Id has a value of 5.
-                        If the route template for the Edit action is /ControllerName/Edit/{id}, the generated HTML link will look like this:-->
-                    </td>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.StartDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Department)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SkillLevel)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Allocated)
+                    </th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartDateFormatted)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Department)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SkillLevel)
+                        </td>
+                        <td>
+                            @if (item.Allocated == false)
+						    {
+							    <span class="badge rounded-pill bg-danger">
+                                    <i class="bi bi-x-circle"></i> Not Allocated   <!--Instead of plain text, add icons to the allocated/unallocated badges for better visual clarity. Note: Requires including Bootstrap Icons in your layout if not already done -->
+                                                          
+                                </span>
+						    }
+						    else
+						    {
+							    <span class="badge rounded-pill bg-success">
+                                    <i class="bi bi-check-circle"></i> Allocated
+                                </span>
+						    }
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary me-2">Details</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning me-2">Edit</a>
+                            @if (User.IsInRole(Roles.Administrator))
+                            {
+                                @if (item.Allocated == false)
+                                {
+                                    <a asp-action="AllocateTask" asp-controller="TaskAllocation" asp-route-id="@item.Id" class="btn btn-success">Allocate</a>
+                                }
+                            }
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger me-2">Delete</a>
+                            <!--asp-route-id: Defines a route parameter named id.
+                             The value of the route parameter is set to item.Id (server-side code), where item is an object in the current context, and Id is its property.Generated URL: 
+                             When the Razor view is rendered, the asp-route-id generates a URL that includes the id as a query string or route parameter, depending on the route configuration.
+                            For example:
+                            Assume the item.Id has a value of 5.
+                            If the route template for the Edit action is /ControllerName/Edit/{id}, the generated HTML link will look like this:-->
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+
+    <script>
+     $(function () {
+        $(".fromDate").datepicker({
+            dateFormat: "DD, d MM, yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-10:+10",
+            onClose: function (selectedDate) {
+                if (selectedDate) {
+                    $(".toDate").datepicker("option", "minDate", selectedDate);
+                } else {
+                    $(".toDate").datepicker("option", "minDate", null);
+                }
+            }
+        });
+
+        $(".toDate").datepicker({
+            dateFormat: "DD, d MM, yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-10:+10",
+            onClose: function (selectedDate) {
+                if (selectedDate) {
+                    $(".fromDate").datepicker("option", "maxDate", selectedDate);
+                } else {
+                    $(".fromDate").datepicker("option", "maxDate", null);
+                }
+            }
+        });
+
+        // Handle clear button click
+        $(".clear-date").on("click", function () {
+            const target = $($(this).data("target")); // Get the target input element
+            target.val(""); // Clear the input value
+            target.datepicker("option", "minDate", null); // Reset minDate
+            target.datepicker("option", "maxDate", null); // Reset maxDate
+
+            if (target.hasClass("fromDate")) {
+                $(".toDate").datepicker("option", "minDate", null); // Clear "toDate" minDate if "fromDate" is cleared
+            } else if (target.hasClass("toDate")) {
+                $(".fromDate").datepicker("option", "maxDate", null); // Clear "fromDate" maxDate if "toDate" is cleared
+            }
+        });
+    });
+
+
+
+    </script>
+}
+
+
+
+
 
 
 
@@ -101,3 +249,14 @@ The helper evaluates the expression itself, not the parameter name (modelItem). 
     //TODO: Is it possile to call a different controler?
                                 <a asp-controller="TaskAllocationController" asp-action="AllocateTask" asp-route-id="item.Id" class="btn btn-success">Allocate Task</a>
 }-->
+
+<!--Selector: $(".fromDate")
+
+Purpose: Selects the HTML element(s) with the class fromDate. In your form, this targets the From Date input field.
+Method: .datepicker("option", "maxDate", selectedDate)
+
+Purpose: Sets an option for the Datepicker instance attached to the selected element(s). Specifically, it sets the maxDate option.
+maxDate Option:
+
+Definition: Specifies the maximum selectable date. Users cannot select a date later than this value.
+Usage: By setting maxDate to selectedDate, you ensure that the From Date cannot be after the To Date chosen by the user.-->

@@ -7,12 +7,53 @@ namespace TaskManagementSystem.Application.Services.TaskTypes;
 
 public class TaskTypesService(ApplicationDbContext _context, IMapper _mapper, IUserService _userService) : ITaskTypesService
 {
-	public async Task<List<TaskTypeReadOnlyVM>> GetAll()
+	public async Task<List<TaskTypeReadOnlyVM>> GetAll(DateOnly? fromDate, DateOnly? toDate, string? department, int? minimumSkillLevel, bool? isAllocatted)
 	{
 		//get the data from the database
-		var data = await _context.TaskTypes.ToListAsync();
+		var taskTypes = await _context.TaskTypes.ToListAsync();
+		//TODO: PUT FILTER LOGIC IN METHOD?
+		if (taskTypes == null)
+		{
+			return null;
+		}
+		if (fromDate.HasValue && toDate.HasValue)
+		{
+			taskTypes = taskTypes
+				.Where(t => (t.StartDate >= fromDate && t.StartDate<= toDate))
+				.ToList();
+		}
+		if( fromDate.HasValue && !toDate.HasValue) 
+		{
+			taskTypes = taskTypes
+				.Where(t => t.StartDate >= fromDate)
+				.ToList();
+		}
+        if (!fromDate.HasValue && toDate.HasValue)
+        {
+            taskTypes = taskTypes
+                .Where(t => t.StartDate <= toDate)
+                .ToList();
+        }
+        if (!string.IsNullOrEmpty(department))
+		{
+			taskTypes = taskTypes
+				.Where(t => t.Department == department)
+				.ToList();
+		}
+		if (minimumSkillLevel.HasValue)
+		{
+			taskTypes = taskTypes
+				.Where(t => t.SkillLevel >= minimumSkillLevel)
+				.ToList();
+		}
+		if (isAllocatted.HasValue)
+		{
+			taskTypes = taskTypes
+				.Where(t => t.Allocated == isAllocatted)
+				.ToList();
+		}
 		//created the mapping profile for the conversion to TaskTypeReadOnlyVM
-		var viewData = _mapper.Map<List<TaskTypeReadOnlyVM>>(data);
+		var viewData = _mapper.Map<List<TaskTypeReadOnlyVM>>(taskTypes);
 		return viewData;
 	}
 

@@ -52,44 +52,46 @@
 {
 	@foreach(var allocation in Model.TaskAllocations)
 	{
-		<table class="table">
-			<thead>
-				<!--TODO: Html.DisplayNameFor doesnt work here why??-->
-				<th>
-					Date
-				</th>
-				<th>
-					Task
-				</th>
-				<th>
-					Department
-				</th>
-				<th>
-					Skill level
-				</th>
-				<th>
-					Description
-				</th>
+		<div class="table-responsive">
+			<table class="table table-hover">
+				<thead>
+					<!--TODO: Html.DisplayNameFor doesnt work here why??-->
+					<th>
+						Date
+					</th>
+					<th>
+						Task
+					</th>
+					<th>
+						Department
+					</th>
+					<th>
+						Skill level
+					</th>
+					<th>
+						Description
+					</th>
 
-			</thead>
-			<tbody>
-				<td>
-					@allocation.WorkingDay.Day
-				</td>
-				<td>
-					@allocation.TaskType.Name
-				</td>
-				<td>
-					@allocation.TaskType.Department
-				</td>
-				<td>
-					@allocation.TaskType.SkillLevel
-				</td>
-				<td>
-					@allocation.TaskType.Description
-				</td>
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					<td>
+						@allocation.WorkingDay.Day
+					</td>
+					<td>
+						@allocation.TaskType.Name
+					</td>
+					<td>
+						@allocation.TaskType.Department
+					</td>
+					<td>
+						@allocation.TaskType.SkillLevel
+					</td>
+					<td>
+						@allocation.TaskType.Description
+					</td>
+				</tbody>
+			</table>
+		</div>
 	}
 }
 else

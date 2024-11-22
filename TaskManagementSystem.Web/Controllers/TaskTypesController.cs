@@ -8,9 +8,17 @@ namespace TaskManagementSystem.Web.Controllers;
 [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
 public class TaskTypesController(ITaskTypesService _taskTypesService) : Controller
 {
-    public async Task <IActionResult> Index()
+    public async Task <IActionResult> Index(DateOnly? fromDate, DateOnly? toDate, 
+        string? department, int? minimumSkillLevel, bool? isAllocatted, bool noSuitableEmployee = false, string? taskName = null)
     {
-        var viewData = await _taskTypesService.GetAll();
+        var viewData = await _taskTypesService.GetAll(fromDate, toDate, department, minimumSkillLevel, isAllocatted);
+        ViewBag.fromDate = fromDate;
+        ViewBag.toDate = toDate;
+        ViewBag.department = department;
+        ViewBag.minimumSkillLevel = minimumSkillLevel;
+        ViewBag.isAllocatted = isAllocatted;
+        ViewBag.noSuitableEmployee = noSuitableEmployee;
+        ViewBag.taskName = taskName;
         return View(viewData);
     }
 

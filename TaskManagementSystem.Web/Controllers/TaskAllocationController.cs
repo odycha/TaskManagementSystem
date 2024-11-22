@@ -6,18 +6,6 @@ namespace TaskManagementSystem.Web.Controllers;
 [Authorize]
 public class TaskAllocationController(ITaskAllocationsService _taskAllocationService) : Controller
 {
-	//see all unallocated tasks
-	public async Task<IActionResult> Index(bool noSuitableEmployee = false, string? taskName = null)
-	{
-		var unallocatedTasks = await _taskAllocationService.GetAllUnallocatedTasks();
-		if (unallocatedTasks == null)
-		{
-			return NotFound();
-		}
-		ViewBag.noSuitableEmployee = noSuitableEmployee;
-		ViewBag.taskName = taskName;
-		return View(unallocatedTasks);
-	}
 
 	//Get
 	//a task will be allocated to the lower skilled employee possible, who is available and in the same department
@@ -50,17 +38,19 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
         }
 		catch (NoSuitableEmployeeException e)
 		{
-			return RedirectToAction("Index", new { noSuitableEmployee = true , taskName =  e.Message });
+			return RedirectToAction("Index", "TaskTypes", new { noSuitableEmployee = true , taskName =  e.Message });
 		}
 
-		return RedirectToAction(nameof(Index));
+		return RedirectToAction("Index", "TaskTypes");
 	}
 	
 	//View All Employees
     [Authorize(Roles = Roles.Administrator)]
-    public async Task<IActionResult> ViewEmployees()
+    public async Task<IActionResult> ViewEmployees(string? department, int? minimumSkillLevel)
 	{
-		var employees = await _taskAllocationService.GetEmployees();
+		var employees = await _taskAllocationService.GetEmployees(department, minimumSkillLevel);
+		ViewBag.department = department;
+		ViewBag.minimumSkillLevel = minimumSkillLevel;
 		return View(employees);
 	}
 
@@ -93,14 +83,18 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 }
 
 
-//TODO: View all allocations per date
+
 
 //TODO: Unallocate task AT TASKS PAGE
 
-//TODO: WHEN LOOKING AT AN EMPLOYEE EXCEPT FROM VIEWING ALLOCATIONS - SEE ALSO A CALENDAR WITH HIS AVAILABILITY
+//TODO: WHEN LOOKING AT AN EMPLOYEE EXCEPT FROM VIEWING ALLOCATIONS - SEE ALSO A CALENDAR WITH HIS AVAILABILITY??
 
-//TODO: SHOW WORKING DAYS IN A CALENDAR 
+//TODO: SHOW WORKING DAYS IN A CALENDAR and when click show details
 
 //TODO: SHOW TASKS IN A CALENDAR PER MONTH AND PER DEPARTMENT
 
 //TODO: When we edit a task but we dont change anything and press save than i mustnt become unallocated
+
+//TODO: FILTER TASKS BASED ON DATE FROM-TO DEPARTMENT MINIMUMSKILLLEVEL AND ALLOCATIONSTATUS ----- REMOVE UNALLOCATED TASKS PAGE
+
+//TODO: MAKE A CALENDAR FOR ADMIN VIEW TO SEE EMPLOYEE AVAILABILITY PER DAY AND PER DEPARTMENT AND SKILL LEVEL

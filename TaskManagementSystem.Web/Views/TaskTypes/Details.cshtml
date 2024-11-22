@@ -8,41 +8,41 @@
 <hr />
 <div>
 	<dl class="row">
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(model => model.Name)
-	</dt>
-	<dt class="col-sm-10">
-		@Html.DisplayFor(model => model.Name)
-	</dt>
-	<br />
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.StartDate)
-	</dt>
-	<dt class="col-sm-10">
-		@Html.DisplayFor(Model => Model.StartDate)
-	</dt>
-	<br />
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.Department)
-	</dt>
-	<dt class="col-sm-10">
-		@Html.DisplayFor(Model => Model.Department)
-	</dt>
-	<br/>
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.SkillLevel)
-	</dt>
-	<dt class="col-sm-10">
-		@Html.DisplayFor(Model => Model.SkillLevel)
-	</dt>
-	<br />
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.Description)
-	</dt>
-	<dt class="col-sm-10">
-		<input type="text" class="form-control" value="@Model.Description" readonly />
-	</dt>
-	<br />
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Name)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+		<br />
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.StartDate)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.StartDate)
+		</dd>
+		<br />
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Department)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.Department)
+		</dd>
+		<br/>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.SkillLevel)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.SkillLevel)
+		</dd>
+		<br />
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Description)
+		</dt>
+		<dd class="col-sm-10">
+			<input type="text" class="form-control" value="@Model.Description" readonly />
+		</dd>
+		<br />
 	</dl>
 </div>
 @if (Model.Allocated == true)
@@ -50,37 +50,41 @@
 	<hr />
 	<h1>The task is allocated to the following employee:</h1>
 	<br />
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.employeeListVm.FirstName)
-	</dt>
-	<dd class="col-sm-10">
-		@Html.DisplayFor(Model => Model.employeeListVm.FirstName)
-	</dd>
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.employeeListVm.LastName)
-	</dt>
-	<dd class="col-sm-10">
-		@Html.DisplayFor(Model => Model.employeeListVm.LastName)
-	</dd>
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.employeeListVm.DepartmentName)
-	</dt>
-	<dd class="col-sm-10">
-		@Html.DisplayFor(Model => Model.employeeListVm.DepartmentName)
-	</dd>
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.employeeListVm.SkillLevel)
-	</dt>
-	<dd class="col-sm-10">
-		@Html.DisplayFor(Model => Model.employeeListVm.SkillLevel)
-	</dd>
-	<dt class="col-sm-2">
-		@Html.DisplayNameFor(Model => Model.employeeListVm.Email)
-	</dt>
-	<dd class="col-sm-10">
-		@Html.DisplayFor(Model => Model.employeeListVm.Email)
-	</dd>
-	<br />
+	<div>
+		<dl class="row">
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(Model => Model.employeeListVm.FirstName)
+			</dt>
+			<dd class="col-sm-7">
+				@Html.DisplayFor(Model => Model.employeeListVm.FirstName)
+			</dd>
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(Model => Model.employeeListVm.LastName)
+			</dt>
+			<dd class="col-sm-7">
+				@Html.DisplayFor(Model => Model.employeeListVm.LastName)
+			</dd>
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(Model => Model.employeeListVm.DepartmentName)
+			</dt>
+			<dd class="col-sm-7">
+				@Html.DisplayFor(Model => Model.employeeListVm.DepartmentName)
+			</dd>
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(Model => Model.employeeListVm.SkillLevel)
+			</dt>
+			<dd class="col-sm-7">
+				@Html.DisplayFor(Model => Model.employeeListVm.SkillLevel)
+			</dd>
+			<dt class="col-sm-3">
+				@Html.DisplayNameFor(Model => Model.employeeListVm.Email)
+			</dt>
+			<dd class="col-sm-7">
+				@Html.DisplayFor(Model => Model.employeeListVm.Email)
+			</dd>
+			<br />
+		</dl>
+	</div>
 }
 
 <a asp-action="Index" class="btn btn-primary">Back to List</a>

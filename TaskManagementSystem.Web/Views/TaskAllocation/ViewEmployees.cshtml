@@ -13,55 +13,97 @@
 }
 else
 {
-	<table class="table">
-		<thead>
-			<tr>
-				<th>
-					@Html.DisplayNameFor(Model=>Model.FirstName)
-				</th>
-				<th>
-					@Html.DisplayNameFor(Model => Model.LastName)
-				</th>
-				<th>
-					@Html.DisplayNameFor(Model => Model.DateOfBirth)
-				</th>
-				<th>
-					@Html.DisplayNameFor(Model => Model.DepartmentName)
-				</th>
-				<th>
-					@Html.DisplayNameFor(Model => Model.SkillLevel)
-				</th>
-				<th>
-					@Html.DisplayNameFor(Model => Model.Email)
-				</th>
-		</thead>
-		<tbody>
-			@foreach(var item in Model)
-			{
+	<!-- Filter Form -- in other create forms: The form works without explicitly specifying
+	method="get" because the default method for HTML forms is POST, and in this case, the 
+	form submission is intended to send data to the server using the POST HTTP method.-->
+	<form asp-action="ViewEmployees" method="get">
+		<div class="d-flex flex-wrap align-items-center gap-3">
+			<!-- Department Dropdown -->
+			<div class="form-group">
+				<label for="department" class="control-label">Department</label>
+				<select class="form-control" id="department" name="department">
+					<option value="" selected="@(ViewBag.department == null)">All Departments</option>
+					<option value="Development" selected="@(ViewBag.department == "Development")">Development</option>
+					<option value="IT Support" selected="@(ViewBag.department == "IT Support")">IT Support</option>
+					<option value="Marketing" selected="@(ViewBag.department == "Marketing")">Marketing</option>
+				</select>
+			</div>
+
+			<!-- Minimum Skill Level Dropdown -->
+			<div class="form-group">
+				<label for="minimumSkillLevel" class="control-label">Minimum Skill Level</label>
+				<select class="form-control" id="minimumSkillLevel" name="minimumSkillLevel">
+					<option value="" selected="@(ViewBag.minimumSkillLevel == null)">Any Skill Level</option>
+					@for (int i = 1; i <= 10; i++)
+					{
+						<option value="@i" selected="@(ViewBag.minimumSkillLevel == i)">@i</option>
+					}
+				</select>
+			</div>
+
+			<!-- Submit Button -->
+			<div class="form-group">
+				<label class="form-label d-block" style="visibility: hidden;">Filter</label>
+				<button type="submit" class="btn btn-success">Filter</button>
+			</div>
+    </div>
+</form>
+
+
+
+	<br />
+
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
 				<tr>
-					<td>
-						@Html.DisplayFor(Model => item.FirstName)
-					</td>
-					<td>
-						@Html.DisplayFor(Model => item.LastName)
-					</td>
-					<td>
-						@Html.DisplayFor(Model => item.DateOfBirthFormatted)
-					</td>
-					<td>
-						@Html.DisplayFor(Model => item.DepartmentName)
-					</td>
-					<td>
-						@Html.DisplayFor(Model => item.SkillLevel)
-					</td>
-					<td>
-						@Html.DisplayFor(Model => item.Email)
-					</td>
-					<td>
-						<a asp-action="ViewEmployeeAllocations" asp-route-id="@item.Id" class="btn btn-primary">View Task Allocations</a>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+					<th>
+						@Html.DisplayNameFor(Model=>Model.FirstName)
+					</th>
+					<th>
+						@Html.DisplayNameFor(Model => Model.LastName)
+					</th>
+					<th>
+						@Html.DisplayNameFor(Model => Model.DateOfBirth)
+					</th>
+					<th>
+						@Html.DisplayNameFor(Model => Model.DepartmentName)
+					</th>
+					<th>
+						@Html.DisplayNameFor(Model => Model.SkillLevel)
+					</th>
+					<th>
+						@Html.DisplayNameFor(Model => Model.Email)
+					</th>
+			</thead>
+			<tbody>
+				@foreach(var item in Model)
+				{
+					<tr>
+						<td>
+							@Html.DisplayFor(Model => item.FirstName)
+						</td>
+						<td>
+							@Html.DisplayFor(Model => item.LastName)
+						</td>
+						<td>
+							@Html.DisplayFor(Model => item.DateOfBirthFormatted)
+						</td>
+						<td>
+							@Html.DisplayFor(Model => item.DepartmentName)
+						</td>
+						<td>
+							@Html.DisplayFor(Model => item.SkillLevel)
+						</td>
+						<td>
+							@Html.DisplayFor(Model => item.Email)
+						</td>
+						<td>
+							<a asp-action="ViewEmployeeAllocations" asp-route-id="@item.Id" class="btn btn-primary">View Task Allocations</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
 }

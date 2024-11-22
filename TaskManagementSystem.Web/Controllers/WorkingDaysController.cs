@@ -75,7 +75,6 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
 
 
 
-//TODO: IF A WORKING DAY EXISTS FOR DATE YOU CANT CREATE A SECOND ONE
 
 //TODO: ONCLICK IN CALENDAR SHOW WORKING DAY DETAILS
 

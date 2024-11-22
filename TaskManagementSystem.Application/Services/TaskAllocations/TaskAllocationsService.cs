@@ -104,36 +104,39 @@ public class TaskAllocationsService(
 
 
 
-    //GET 
-    public async Task<List<UnallocatedTaskVM>> GetAllUnallocatedTasks()
-    {
-        var data = await _context.TaskTypes
-            .Where(q => q.Allocated == false)
-            .ToListAsync();
-        var model = _mapper.Map<List<UnallocatedTaskVM>>(data);
-        return model;
-    }
-
-
-    public async Task<UnallocatedTaskVM> GetUnallocatedTask(int taskId)
+    public async Task<TaskTypeReadOnlyVM> GetUnallocatedTask(int taskId)
     {
         var data = await _context.TaskTypes
             .Where(q => q.Id == taskId)
             .SingleOrDefaultAsync();
-        var model = _mapper.Map<UnallocatedTaskVM>(data);
+        var model = _mapper.Map<TaskTypeReadOnlyVM>(data);
         return model;
     }
 
-    public async Task<List<EmployeeListVM>> GetEmployees()
+    public async Task<List<EmployeeListVM>> GetEmployees(string? department, int? minimumSkillLevel)
     {
-        var users = await _userService.GetEmployees();
+        var employees = await _userService.GetEmployees();
+        //filter by department
+        if (!string.IsNullOrEmpty(department))
+        {
+            employees = employees
+                .Where(e => e.DepartmentName == department)
+                .ToList();
+        }
+        //filter by minimum skill level
+        if(minimumSkillLevel.HasValue)
+        {
+            employees = employees
+                .Where(e => e.SkillLevel >= minimumSkillLevel)
+                .ToList();
+        }
         //explicitly states that the mapping is converting from a List<ApplicationUser> to a List<EmployeeListVM>
-        var employees = _mapper.Map<List<ApplicationUser>, List<EmployeeListVM>>(users);
-        employees = employees
-            .OrderBy(e => e.DepartmentName)
+        var employeesVm = _mapper.Map<List<ApplicationUser>, List<EmployeeListVM>>(employees);
+		employeesVm = employeesVm
+			.OrderBy(e => e.DepartmentName)
             .ThenByDescending(e => e.SkillLevel)
             .ToList();
-        return employees;
+        return employeesVm;
     }
 }
 

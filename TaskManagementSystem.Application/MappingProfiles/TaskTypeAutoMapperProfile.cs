@@ -7,7 +7,7 @@ namespace LeaveManagementSystem.Application.MappingProfiles
     {
         public TaskTypeAutoMapperProfile()
         {
-            CreateMap<TaskType, TaskTypeReadOnlyVM>();
+            
 			CreateMap<TaskTypeCreateVM, TaskType> ();
             CreateMap<TaskType, TaskTypeEditVM>();
             CreateMap<TaskType, TaskTypeEditVM>().ReverseMap();

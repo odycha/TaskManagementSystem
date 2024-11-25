@@ -34,9 +34,10 @@ else
                 Model.Select(item => new
                 {
                     id = item.Id,
-                    title = $"{item.Comments}", // Combine comments 
+                    title = $"{item.StartTime} - {item.EndTime}", // Combine comments 
                     start = $"{item.DayFormatted}T{item.StartTime:hh\\:mm}", // Start datetime in ISO 8601
-                    end = $"{item.DayFormatted}T{item.EndTime:hh\\:mm}",     // End datetime in ISO 8601
+                    end = $"{item.DayFormatted}T{item.EndTime:hh\\:mm}",// End datetime in ISO 8601
+                    date = item.Day,
                     allDay = false, // Ensure events are treated as timed events
                     backgroundColor = "#007bff", // Custom background color
                     borderColor = "#007bff",     // Custom border color
@@ -45,41 +46,53 @@ else
                 })
             ));
 
+            // Create background events based on actual events
+            var backgroundEvents = events.map(event => ({
+                id: event.id,
+                start: event.date,
+                end: event.date,
+                overlap: true, // Allow overlap with regular events
+                display: 'background',
+                color: 'green', // Highlight color for background
+            }));
+
+            // Combine the two sets of events
+            var allEvents = events.concat(backgroundEvents);
+
             console.log(events); // Debugging: Check serialized events
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth', // Week view
             headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: events, // Bind events
-        eventDisplay: 'block', // Stretches the event
-        forceEventDuration: true, // Ensures all events have duration
-        slotMinTime: "00:00:00", // Earliest time
-        slotMaxTime: "24:00:00", // Latest time
-        eventTimeFormat: { // Format event times
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        },
-        allDaySlot: false, // Removes the all-day section
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: allEvents, // Bind events
+            eventDisplay: 'block', // Stretches the event
+            forceEventDuration: true, // Ensures all events have duration
+            slotMinTime: "00:00:00", // Earliest time
+            slotMaxTime: "24:00:00", // Latest time
+            eventTimeFormat: { // Format event times
+                hour: '2-digit',
+                minute: '2-digit',
+                hourCycle: 'h23'
+            },
+            allDaySlot: false,
 
-
-
-        eventMouseEnter: function (info) {
-            info.el.style.cursor = 'pointer'; // Change the cursor to a pointer
-        },
-        eventMouseLeave: function (info) {
-            info.el.style.cursor = ''; // Revert to the default cursor
-        },
-        // Handle event click
-        eventClick: function (info) {
-            // Redirect to the Edit action with the event ID
-            var editUrl = '@Url.Action("Edit", "WorkingDays")' + '?id=' + info.event.id;
-            window.location.href = editUrl;
-        }
+            // Handle event click
+            eventClick: function (info) {
+                // Redirect to the Edit action with the event ID
+                var editUrl = '@Url.Action("Edit", "WorkingDays")' + '?id=' + info.event.id;
+                window.location.href = editUrl;
+            },
+            eventMouseEnter: function (info) {
+                info.el.style.cursor = 'pointer'; // Change the cursor to a pointer
+            },
+            eventMouseLeave: function (info) {
+                info.el.style.cursor = ''; // Revert to the default cursor
+            }
+            
 
     });
 

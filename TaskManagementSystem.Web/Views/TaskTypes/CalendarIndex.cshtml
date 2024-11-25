@@ -1,0 +1,103 @@
+﻿@model IEnumerable<TaskTypeReadOnlyVM>
+@{
+    ViewData["Title"] = "CalendarIndex";
+}
+
+<div class="d-flex flex-wrap align-items-center gap-3">
+    <h1>Tasks Calendar</h1>
+</div>
+
+<!-- Filters Section -->
+<form asp-action="Index" method="get">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+
+        <!-- Department Dropdown -->
+        <div class="form-group">
+            <label for="department" class="control-label">Department</label>
+            <select class="form-control" id="department" name="department">
+                <option value="" selected="@(ViewBag.department == null)">All Departments</option>
+                <option value="Development" selected="@(ViewBag.department == "Development")">Development</option>
+                <option value="IT Support" selected="@(ViewBag.department == "IT Support")">IT Support</option>
+                <option value="Marketing" selected="@(ViewBag.department == "Marketing")">Marketing</option>
+            </select>
+        </div>
+
+        <!-- Minimum Skill Level Dropdown -->
+        <div class="form-group">
+            <label for="minimumSkillLevel" class="control-label">Minimum Skill Level</label>
+            <select class="form-control" id="minimumSkillLevel" name="minimumSkillLevel">
+                <option value="" selected="@(ViewBag.minimumSkillLevel == null)">Any Skill Level</option>
+                @for (int i = 1; i <= 10; i++)
+                {
+                    <option value="@i" selected="@(ViewBag.minimumSkillLevel == i)">@i</option>
+                }
+            </select>
+        </div>
+
+        <!-- Allocation Dropdown -->
+        <div class="form-group">
+            <label for="isAllocatted" class="control-label">Allocation</label>
+            <select class="form-control" id="isAllocatted" name="isAllocatted">
+                <option value="" selected="@(ViewBag.isAllocatted == null)">All</option>
+                <option value="true" selected="@(ViewBag.isAllocatted == true)">Allocated</option>
+                <option value="false" selected="@(ViewBag.isAllocatted == false)">Not Allocated</option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <label class="form-label d-block" style="visibility: hidden;">Filter</label>
+            <button type="submit" class="btn btn-success">Filter</button>
+        </div>
+    </div>
+</form>
+
+<br />
+
+<!-- FullCalendar -->
+<div id="calendar"></div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+             var calendarEl = document.getElementById('calendar');
+
+             // Convert the Model data to JSON for FullCalendar events
+            var events = @Html.Raw(Json.Serialize(
+                Model.Select(item => new
+                    {
+                    title = $"{item.Name}",
+                    start = $"{item.StartDate:yyyy-MM-dd}T{item.StartTime:hh\\:mm}",
+                    end = $"{item.StartDate:yyyy-MM-dd}T{item.EndTime:hh\\:mm}",
+                    color = item.Allocated ? "#28a745" : "#dc3545", // Green for allocated, red for unallocated
+                    extendedProps = new
+                    {
+                        department = item.Department,
+                        skillLevel = item.SkillLevel
+                    }
+                })
+            ));
+
+             var calendar = new FullCalendar.Calendar(calendarEl, {
+                 initialView: 'dayGridMonth', // Default view
+                 headerToolbar: {
+                     left: 'prev,next today',
+                     center: 'title',
+                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                 },
+                events: events,// Pass events
+                eventDisplay: 'block',
+                 eventClick: function (info) {
+                         // Display details on event click (optional)
+                     alert('Task: ' + info.event.title +
+                           '\nDepartment: ' + info.event.extendedProps.department +
+                           '\nSkill Level: ' + info.event.extendedProps.skillLevel);
+                 }
+             });
+
+                 calendar.render();
+             });
+    </script>
+}

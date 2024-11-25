@@ -27,6 +27,18 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         return View(viewData);
     }
 
+    public async Task<IActionResult> CalendarIndex(string? department, int? minimumSkillLevel, bool? isAllocatted)
+
+    {
+        //get all tasks according to filters
+        var viewData = await _taskTypesService.GetAll(null, null, null, null, department, minimumSkillLevel, isAllocatted);
+        //returning with viewbag users filtering selection
+        ViewBag.department = department;
+        ViewBag.minimumSkillLevel = minimumSkillLevel;
+        ViewBag.isAllocatted = isAllocatted;
+        return View(viewData);
+    }
+
     public async Task <IActionResult> Details(int? id)
     {
         if (id == null)
@@ -135,3 +147,9 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
     //Delete actions, being more destructive, require a confirmation step and thus benefit from the two-method approach to separate the "intent to delete" from the "action of deletion."
 
 }
+
+
+
+
+//TODO: Create on click workday on calendar
+//TODO: At employee view unallocate button for a task

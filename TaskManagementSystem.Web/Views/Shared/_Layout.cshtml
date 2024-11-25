@@ -50,6 +50,7 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item" asp-controller="TaskTypes" asp-action="Index">Tasks</a></li>
+                                    <li><a class="dropdown-item" asp-controller="TaskTypes" asp-action="CalendarIndex">Task Calendar</a></li>                         
                                     @if (User.IsInRole(Roles.Administrator)){
                                     <li><a class="dropdown-item" asp-controller="TaskAllocation" asp-action="ViewEmployees">View Employees</a></li>
                                     }

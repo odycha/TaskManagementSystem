@@ -60,6 +60,12 @@
 						Date
 					</th>
 					<th>
+						Start Time
+					</th>
+					<th>
+						End Time
+					</th>
+					<th>
 						Task
 					</th>
 					<th>
@@ -76,6 +82,12 @@
 				<tbody>
 					<td>
 						@allocation.WorkingDay.Day
+					</td>
+					<td>
+						@allocation.WorkingDay.StartTime
+					</td>
+					<td>
+						@allocation.WorkingDay.EndTime
 					</td>
 					<td>
 						@allocation.TaskType.Name

@@ -10,6 +10,8 @@ public class TaskType
     [MaxLength(30)]
     public string Name { get; set; }
     public DateOnly StartDate { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
 
     [MaxLength(30)]
     public string Department { get; set; }

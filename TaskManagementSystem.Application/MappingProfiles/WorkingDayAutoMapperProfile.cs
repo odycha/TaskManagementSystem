@@ -8,7 +8,8 @@ public class WorkingDayAutoMapperProfile : Profile
     {
         CreateMap<WorkingDay, WorkingDayReadOnlyVM>();
         CreateMap<WorkingDayCreateVM, WorkingDay>();
-    }
+		CreateMap<WorkingDayCreateVM, WorkingDay>().ReverseMap();
+	}
 }
 
 

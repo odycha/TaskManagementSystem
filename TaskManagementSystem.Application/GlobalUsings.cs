@@ -7,3 +7,5 @@ global using TaskManagementSystem.Application.Services.Users;
 global using TaskManagementSystem.Common.Static;
 global using TaskManagementSystem.Common.Exceptions;
 global using Microsoft.EntityFrameworkCore;
+global using AutoMapper;
+global using Microsoft.AspNetCore.Identity.UI.Services;

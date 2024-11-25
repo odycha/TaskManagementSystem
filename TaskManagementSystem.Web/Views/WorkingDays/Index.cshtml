@@ -27,35 +27,67 @@ else
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Reference to the calendar element
             var calendarEl = document.getElementById('calendar');
 
-            // Convert the Model data to JSON for FullCalendar
+            // Generate events from the Razor model
             var events = @Html.Raw(Json.Serialize(
-        Model.Select(item => new
-        {
-            title = item.Comments,     // Display comments as the event title
-            start = item.DayFormatted  // Date for the event (ensure DayFormatted is ISO 8601 formatted)
-        })
-        ));
+                Model.Select(item => new
+                {
+                    id = item.Id,
+                    title = $"{item.Comments}", // Combine comments 
+                    start = $"{item.DayFormatted}T{item.StartTime:hh\\:mm}", // Start datetime in ISO 8601
+                    end = $"{item.DayFormatted}T{item.EndTime:hh\\:mm}",     // End datetime in ISO 8601
+                    allDay = false, // Ensure events are treated as timed events
+                    backgroundColor = "#007bff", // Custom background color
+                    borderColor = "#007bff",     // Custom border color
+                    textColor = "#ffffff",       // Custom text color
+                    totalhrs = (item.EndTime - item.StartTime).TotalHours // Calculate total hours
+                })
+            ));
 
-            console.log(events);  // Debug: Check the serialized events
+            console.log(events); // Debugging: Check serialized events
 
-            // Initialize the calendar
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth', // Default view
-                events: events,             // Bind the events
-                headerToolbar: {            // Calendar header configuration
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                }
-                
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', // Week view
+            headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: events, // Bind events
+        eventDisplay: 'block', // Stretches the event
+        forceEventDuration: true, // Ensures all events have duration
+        slotMinTime: "00:00:00", // Earliest time
+        slotMaxTime: "24:00:00", // Latest time
+        eventTimeFormat: { // Format event times
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        },
+        allDaySlot: false, // Removes the all-day section
 
-            });
+
+
+        eventMouseEnter: function (info) {
+            info.el.style.cursor = 'pointer'; // Change the cursor to a pointer
+        },
+        eventMouseLeave: function (info) {
+            info.el.style.cursor = ''; // Revert to the default cursor
+        },
+        // Handle event click
+        eventClick: function (info) {
+            // Redirect to the Edit action with the event ID
+            var editUrl = '@Url.Action("Edit", "WorkingDays")' + '?id=' + info.event.id;
+            window.location.href = editUrl;
+        }
+
+    });
+
 
             // Render the calendar
             calendar.render();
         });
     </script>
 }
+
+

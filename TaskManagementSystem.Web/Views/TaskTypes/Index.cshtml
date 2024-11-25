@@ -12,6 +12,15 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
     </p>
 </div>
 
+<!--Task type period out of working period-->
+@if (ViewBag.taskOutOfWorkingPeriod == true)
+{
+    <div class="alert alert-warning">
+        <strong>Notice:</strong> Task time period is out of the working period for that day. Try adjusting the time period.
+    </div>
+    <br />
+}
+
 <!--No suitable employee for allocating a specific Task-->
 @if (ViewBag.noSuitableEmployee == true)
 {
@@ -19,11 +28,11 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
         <strong>Notice:</strong> There is no suitable employee for the Task: @ViewBag.taskName. Try editing your Task or unallocating an employee.
     </div>
     <br />
-    <h1>Unallocated Tasks</h1>
 }
 
 
 <form asp-action="Index" method="get">
+    <!--Date Filtering-->
     <div class="d-flex flex-wrap align-items-center gap-3">
 
         <div class="form-group">
@@ -41,6 +50,28 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
             <input id="toDate" class="form-control toDate" name="toDate" style="width: 240px;"
                    value="@ViewBag.toDate?.ToString("dddd, d MMMM, yyyy")" />
             <button type="button" class="btn btn-secondary clear-date" data-target="#toDate">C</button>
+        </div>
+    </div>
+
+
+    <!--Time Filtering-->
+    <div class="d-flex flex-wrap align-items-center gap-3">
+
+    <div class="form-group">
+        <label for="fromTime" class="control-label">From Time</label>
+        <div class="d-flex align-items-center gap-2">
+            <input id="fromTime" class="form-control fromTime" name="fromTime" style="width: 240px;" 
+                   value="@ViewBag.fromTime?.ToString("HH:mm")" />
+            <button type="button" class="btn btn-secondary clear-time" data-target="#fromTime">C</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="toTime" class="control-label">To Time</label>
+        <div class="d-flex align-items-center gap-2">
+            <input id="toTime" class="form-control toTime" name="toTime" style="width: 240px;" 
+                   value="@ViewBag.toTime?.ToString("HH:mm")" />
+            <button type="button" class="btn btn-secondary clear-time" data-target="#toTime">C</button>
         </div>
     </div>
 
@@ -109,6 +140,12 @@ else
                         @Html.DisplayNameFor(model => model.StartDate)
                     </th>
                     <th>
+                        @Html.DisplayNameFor(model => model.StartTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EndTime)
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.Department)
                     </th>
                     <th>
@@ -128,6 +165,12 @@ else
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.StartDateFormatted)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EndTime)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Department)
@@ -182,7 +225,8 @@ else
 
 
     <script>
-     $(function () {
+    $(function () {
+        // Datepicker configuration for fromDate and toDate
         $(".fromDate").datepicker({
             dateFormat: "DD, d MM, yy",
             changeMonth: true,
@@ -211,26 +255,66 @@ else
             }
         });
 
-        // Handle clear button click
-        $(".clear-date").on("click", function () {
+        //USING MOMENT JS LIBRARY
+		$("#fromTime").timepicker({
+			timeFormat: "HH:mm", // 24-hour format
+			interval: 30,        // 30-minute increments
+			minTime: "05:00",    // Minimum time
+			maxTime: "20:00",    // Maximum time
+			dynamic: false,      // Static dropdown
+			dropdown: true,      // Dropdown instead of scroll
+			scrollbar: true,     // Scrollable
+			change: function (time) {
+				const minTime = $(this).val();
+				if (minTime) {
+					const minMoment = moment(minTime, "HH:mm"); // Parse StartTime
+					const adjustedMinTime = minMoment.add(30, "minutes").format("HH:mm"); // Add 30 minutes
+					$("#toTime").timepicker("option", "minTime", adjustedMinTime); // Set adjusted minTime for EndTime
+				} else {
+					$("#toTime").timepicker("option", "minTime", null); // Reset minTime if StartTime is cleared
+				}
+			}
+		});
+
+		$("#toTime").timepicker({
+			timeFormat: "HH:mm", // 24-hour format
+			interval: 30,        // 30-minute increments
+			minTime: "05:00",    // Minimum time
+			maxTime: "20:00",    // Maximum time
+			dynamic: false,      // Static dropdown
+			dropdown: true,      // Dropdown instead of scroll
+			scrollbar: true,     // Scrollable
+			change: function (time) {
+				const maxTime = $(this).val();
+				if (maxTime) {
+					const maxMoment = moment(maxTime, "HH:mm"); // Parse EndTime
+					const adjustedMaxTime = maxMoment.subtract(30, "minutes").format("HH:mm"); // Subtract 30 minutes
+					$("#fromTime").timepicker("option", "maxTime", adjustedMaxTime); // Set adjusted maxTime for StartTime
+				} else {
+					$("#fromTime").timepicker("option", "maxTime", null); // Reset maxTime if EndTime is cleared
+				}
+			}
+		});
+
+        // Handle clear button click for both date and time
+        $(".clear-date, .clear-time").on("click", function () {
             const target = $($(this).data("target")); // Get the target input element
             target.val(""); // Clear the input value
-            target.datepicker("option", "minDate", null); // Reset minDate
-            target.datepicker("option", "maxDate", null); // Reset maxDate
 
+            // Reset min and max options for datepickers or timepickers
             if (target.hasClass("fromDate")) {
                 $(".toDate").datepicker("option", "minDate", null); // Clear "toDate" minDate if "fromDate" is cleared
             } else if (target.hasClass("toDate")) {
                 $(".fromDate").datepicker("option", "maxDate", null); // Clear "fromDate" maxDate if "toDate" is cleared
+            } else if (target.hasClass("fromTime")) {
+                $("#toTime").timepicker("option", "minTime", null); // Clear "toTime" minTime if "fromTime" is cleared
+            } else if (target.hasClass("toTime")) {
+                $("#fromTime").timepicker("option", "maxTime", null); // Clear "fromTime" maxTime if "toTime" is cleared
             }
         });
     });
-
-
-
-    </script>
+</script>
 }
-
 
 
 

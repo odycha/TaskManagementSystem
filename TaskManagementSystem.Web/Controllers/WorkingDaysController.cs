@@ -10,6 +10,7 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
         var viewData = await _workingDaysService.GetAll();
         return View(viewData);
     }
+
 	[Authorize(Roles = Roles.Administrator)]
 	//Get
 	public async Task<IActionResult> Create(
@@ -35,15 +36,61 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
                await _workingDaysService.Create(workingDayCreate);
 				
 			}
-            catch(Exception e)
+            catch(SameDateExistsException e)
             {
 				ViewBag.sameDateExists = true;
 				return View(workingDayCreate);
             }
+            catch(InvalidTimeInputException e)
+            {
+				ViewBag.ivalidTimeInput = true;
+				return View(workingDayCreate);
+			}
             return (RedirectToAction(nameof(Index)));
 		}
         return View(workingDayCreate);
     }
+
+    //Get
+    public async Task<IActionResult> Edit (int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var workingDay = await _workingDaysService.Get<WorkingDayCreateVM>(id.Value);
+        if (workingDay == null)
+        {
+            return NotFound();
+        }
+        return View(workingDay);
+    }
+
+    //post
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit (WorkingDayCreateVM model)
+    {
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                await _workingDaysService.Edit(model);
+            }
+            catch (SameDateExistsException e)
+            {
+                ViewBag.sameDateExists = true;
+                return View(model);
+            }
+            catch (InvalidTimeInputException e)
+            {
+                ViewBag.ivalidTimeInput = true;
+                return View(model);
+            }
+            return (RedirectToAction(nameof(Index)));
+        }
+        return View(model);
+	}
 
 	//Get
 	[Authorize(Roles = Roles.Administrator)]

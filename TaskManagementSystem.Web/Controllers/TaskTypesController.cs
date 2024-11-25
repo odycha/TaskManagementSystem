@@ -8,16 +8,21 @@ namespace TaskManagementSystem.Web.Controllers;
 [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
 public class TaskTypesController(ITaskTypesService _taskTypesService) : Controller
 {
-    public async Task <IActionResult> Index(DateOnly? fromDate, DateOnly? toDate, 
-        string? department, int? minimumSkillLevel, bool? isAllocatted, bool noSuitableEmployee = false, string? taskName = null)
+    public async Task <IActionResult> Index(DateOnly? fromDate, DateOnly? toDate, TimeOnly? fromTime, TimeOnly? toTime,
+        string? department, int? minimumSkillLevel, bool? isAllocatted, bool? taskOutOfWorkingPeriod ,bool noSuitableEmployee = false, string? taskName = null)
     {
-        var viewData = await _taskTypesService.GetAll(fromDate, toDate, department, minimumSkillLevel, isAllocatted);
+        //get all tasks according to filters
+        var viewData = await _taskTypesService.GetAll(fromDate, toDate, fromTime, toTime, department, minimumSkillLevel, isAllocatted);
+        //returning with viewbag users filtering selection
         ViewBag.fromDate = fromDate;
         ViewBag.toDate = toDate;
+        ViewBag.toTime = toTime;
+        ViewBag.fromTime = fromTime;
         ViewBag.department = department;
         ViewBag.minimumSkillLevel = minimumSkillLevel;
         ViewBag.isAllocatted = isAllocatted;
-        ViewBag.noSuitableEmployee = noSuitableEmployee;
+		ViewBag.taskOutOfWorkingPeriod = taskOutOfWorkingPeriod;
+		ViewBag.noSuitableEmployee = noSuitableEmployee;
         ViewBag.taskName = taskName;
         return View(viewData);
     }
@@ -50,7 +55,16 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         //TODO: I do not check if the Task exists because there can be 2 tasks with the same name and date - check if all fields the same?
         if (ModelState.IsValid)
         {
-            await _taskTypesService.Create(taskTypeCreate);
+            try
+            {
+				await _taskTypesService.Create(taskTypeCreate);
+			}
+            catch (InvalidTimeInputException e)
+            {
+                ViewBag.invalidTime = true;
+                return View(taskTypeCreate);
+            }
+            
             return RedirectToAction(nameof(Index));
         }
         return View(taskTypeCreate);
@@ -78,7 +92,15 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
     {
         if (ModelState.IsValid)
         {
-            await _taskTypesService.Edit(taskTypeEdit);
+            try
+            {
+				await _taskTypesService.Edit(taskTypeEdit);
+			}
+            catch(InvalidTimeInputException e)
+            {
+                ViewBag.invalidTime = true;
+                return View(taskTypeEdit);
+			}
             return RedirectToAction(nameof(Index));
         }
         return View(taskTypeEdit);

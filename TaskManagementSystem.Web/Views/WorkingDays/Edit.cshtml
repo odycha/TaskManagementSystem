@@ -1,19 +1,9 @@
 ﻿@model WorkingDayCreateVM
 
 @{
-	ViewData["Title"] = "Create";
+	ViewData["Title"] = "Edit";
 }
-<!-- Display the message if coming from allocation -->
-@if (ViewBag.ComingFromAllocation == true)
-{
-	<div class="alert alert-warning">
-		<strong>Notice:</strong> You can't allocate this task because there is no working day available for the date: @ViewBag.workingDayDate . Please create one first!
-	</div>
-}
-else
-{
-	<h1>Create a new working day!</h1>
-}
+<h1>Edit or Delete the Working Day</h1>
 
 <hr />
 @if (ViewBag.sameDateExists != null && (bool)ViewBag.sameDateExists) //Since ViewBag.sameDateExists is dynamically typed, you should cast it to bool when accessing it in the view ((bool)ViewBag.sameDateExists).
@@ -22,45 +12,45 @@ else
 		<strong>Notice:</strong> A Work day already exists for this date. Select another date or edit the existing one.
 	</div>
 }
-@if (ViewBag.ivalidTimeInput != null && (bool)ViewBag.ivalidTimeInput) 
+@if (ViewBag.ivalidTimeInput != null && (bool)ViewBag.ivalidTimeInput)
 {
 	<div class="alert alert-warning">
 		<strong>Notice:</strong> Start Time must be before End Time.
 	</div>
 }
 
-
-
 <div class="row">
 	<div class="col-md-4">
-		<form asp-action="Create">
+		<form asp-action="Edit">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-				<div class="form-group">
-					<label asp-for="Day" class="control-label"></label>
-					<input asp-for="Day" class="form-control" />
-					<span asp-validation-for="Day" class="text-danger"></span>
-				</div>
-				<br />
-				<div class="form-group">
-					<label asp-for="StartTime" class="control-label"></label>
-					<input asp-for="StartTime" class="form-control" />
-					<span asp-validation-for="StartTime" class="text-danger"></span>
-				</div>
-				<br />
-				<div class="form-group">
-					<label asp-for="EndTime" class="control-label"></label>
-					<input asp-for="EndTime" class="form-control" />
-					<span asp-validation-for="EndTime" class="text-danger"></span>
-				</div>
-				<br />
-				<div class="form-group">
-					<label asp-for="Comments" class="control-label"></label>
-					<textarea asp-for="Comments" class="form-control"></textarea>
-					<span asp-validation-for="Comments" class="text-danger"></span>
-				</div>
-				<br />
-				<input type="submit" value="Create Working Day" class="btn btn-success" />
-				<a asp-action="Index" class="btn btn-primary">Back to List</a>
+			<input type="hidden" asp-for="Id" /> <!--bind the Id with the form-->
+			<div class="form-group">
+				<label asp-for="Day" class="control-label"></label>
+				<input asp-for="Day" class="form-control" />
+				<span asp-validation-for="Day" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="StartTime" class="control-label"></label>
+				<input asp-for="StartTime" class="form-control" />
+				<span asp-validation-for="StartTime" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="EndTime" class="control-label"></label>
+				<input asp-for="EndTime" class="form-control" />
+				<span asp-validation-for="EndTime" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="Comments" class="control-label"></label>
+				<textarea asp-for="Comments" class="form-control"></textarea>
+				<span asp-validation-for="Comments" class="text-danger"></span>
+			</div>
+			<br />
+			<input type="submit" value="Edit Working Day" class="btn btn-warning" />
+			<a asp-action="Delete" class="btn btn-danger" asp-route-id="@Model.Id">Delete</a>
+			<a asp-action="Index" class="btn btn-primary">Back to List</a>
 		</form>
 	</div>
 </div>

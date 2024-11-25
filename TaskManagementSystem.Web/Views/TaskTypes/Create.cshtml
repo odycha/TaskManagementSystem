@@ -7,6 +7,12 @@
 	string[] DepartmentNames = Departments.DepartmentNames;
 }
 
+@if (ViewBag.invalidTime != null && (bool)ViewBag.invalidTime)
+{
+	<div class="alert alert-warning">
+		<strong>Notice:</strong> Start Time must be before End Time.
+	</div>
+}
 
 <h1>Create a new Task!</h1>
 <hr />
@@ -36,6 +42,18 @@
 				<label asp-for="StartDate" class="control-label"></label>
 				<input asp-for="StartDate" class="form-control" />
 				<span asp-validation-for="StartDate" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="StartTime" class="control-label"></label>
+				<input asp-for="StartTime" class="form-control" />
+				<span asp-validation-for="StartTime" class="text-danger"></span>
+			</div>
+			<br />
+			<div class="form-group">
+				<label asp-for="EndTime" class="control-label"></label>
+				<input asp-for="EndTime" class="form-control" />
+				<span asp-validation-for="EndTime" class="text-danger"></span>
 			</div>
 			<br />
 			<label asp-for="Department" class="control-label"></label>
@@ -84,6 +102,50 @@
 				yearRange: "+0:+10"
 			});
 		});
+
+		//USING MOMENT JS LIBRARY
+		$("#StartTime").timepicker({
+			timeFormat: "HH:mm", // 24-hour format
+			interval: 30,        // 30-minute increments
+			minTime: "05:00",    // Minimum time
+			maxTime: "20:00",    // Maximum time
+			defaultTime: '09:00',
+			dynamic: false,      // Static dropdown
+			dropdown: true,      // Dropdown instead of scroll
+			scrollbar: true,     // Scrollable
+			change: function (time) {
+				const minTime = $(this).val();
+				if (minTime) {
+					const minMoment = moment(minTime, "HH:mm"); // Parse StartTime
+					const adjustedMinTime = minMoment.add(30, "minutes").format("HH:mm"); // Add 30 minutes
+					$("#EndTime").timepicker("option", "minTime", adjustedMinTime); // Set adjusted minTime for EndTime
+				} else {
+					$("#EndTime").timepicker("option", "minTime", null); // Reset minTime if StartTime is cleared
+				}
+			}
+		});
+
+		$("#EndTime").timepicker({
+			timeFormat: "HH:mm", // 24-hour format
+			interval: 30,        // 30-minute increments
+			minTime: "05:00",    // Minimum time
+			maxTime: "20:00",    // Maximum time
+			defaultTime: '17:00',
+			dynamic: false,      // Static dropdown
+			dropdown: true,      // Dropdown instead of scroll
+			scrollbar: true,     // Scrollable
+			change: function (time) {
+				const maxTime = $(this).val();
+				if (maxTime) {
+					const maxMoment = moment(maxTime, "HH:mm"); // Parse EndTime
+					const adjustedMaxTime = maxMoment.subtract(30, "minutes").format("HH:mm"); // Subtract 30 minutes
+					$("#StartTime").timepicker("option", "maxTime", adjustedMaxTime); // Set adjusted maxTime for StartTime
+				} else {
+					$("#StartTime").timepicker("option", "maxTime", null); // Reset maxTime if EndTime is cleared
+				}
+			}
+		});
+
 	</script>
 }
 

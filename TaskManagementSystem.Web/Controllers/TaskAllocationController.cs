@@ -36,6 +36,10 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 		{
 			return RedirectToAction("Create", "WorkingDays", new { comingFromAllocation = true , workingDayDate = e.MissingDate });
         }
+		catch (InvalidTimeInputException e)
+		{
+			return RedirectToAction("Index", "TaskTypes", new { comingFromAllocation = true, taskOutOfWorkingPeriod = true });
+		}
 		catch (NoSuitableEmployeeException e)
 		{
 			return RedirectToAction("Index", "TaskTypes", new { noSuitableEmployee = true , taskName =  e.Message });

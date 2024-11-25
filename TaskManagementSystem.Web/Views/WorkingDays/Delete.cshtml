@@ -15,6 +15,20 @@
 		<dd class="col-sm-8">
 			@Html.DisplayFor(Model => Model.Day)
 		</dd>
+		<dt class="col-sm-4">
+			@Html.DisplayNameFor(Model => Model.StartTime)
+		</dt>
+		<br />
+		<dd class="col-sm-8">
+			@Html.DisplayFor(Model => Model.StartTime)
+		</dd>
+		<dt class="col-sm-4">
+			@Html.DisplayNameFor(Model => Model.EndTime)
+		</dt>
+		<br />
+		<dd class="col-sm-8">
+			@Html.DisplayFor(Model => Model.EndTime)
+		</dd>
 		<br />
 		<dt class="col-sm-4">
 			@Html.DisplayNameFor(Model => Model.Comments)
@@ -29,7 +43,7 @@
 		<form asp-action="Delete">
 			<input type="hidden" asp-for="Id" />
 		<input type="submit" value="Delete day" class="btn btn-danger me-2" />
-			<a asp-action="Index" class="btn btn-primary ">Back to List</a>
+			<a asp-action="Edit" class="btn btn-warning" asp-route-id="@Model.Id">Back to Edit</a>
 		</form>
 	
 </div>

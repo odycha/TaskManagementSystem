@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace TaskManagementSystem.Application.Models.TaskTypes;
@@ -11,7 +12,15 @@ public class TaskTypeEditVM
     public string Name { get; set; } = string.Empty;
     [Required]
     public DateOnly StartDate { get; set; }
-    [Required]
+
+	[Required]
+	[DisplayName("Start Time")]
+	public TimeOnly StartTime { get; set; }
+
+	[Required]
+	[DisplayName("End Time")]
+	public TimeOnly EndTime { get; set; }
+	[Required]
     [Length(4, 150, ErrorMessage = "You have violated the length requirements")]
     public string Department { get; set; } = string.Empty;
 	[Required]

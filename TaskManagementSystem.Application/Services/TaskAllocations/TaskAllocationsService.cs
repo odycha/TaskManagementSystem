@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace TaskManagementSystem.Application.Services.TaskAllocations;
 
@@ -8,7 +9,9 @@ public class TaskAllocationsService(
     ApplicationDbContext _context,
     IHttpContextAccessor _httpContextAccessor,
     UserManager<ApplicationUser> _userManager,
-    IMapper _mapper, IUserService _userService) : ITaskAllocationsService
+    IMapper _mapper, IUserService _userService,
+    IEmailSender _emailSender) : ITaskAllocationsService
+    
 {
     //TODO
     public async Task AllocateTask(int taskId)
@@ -27,12 +30,21 @@ public class TaskAllocationsService(
             // Handle case where the working day is not found
             throw new WorkingDayNotFoundException(task.StartDate);
         }
+        if (task.StartTime < workingDay.StartTime || task.EndTime > workingDay.EndTime)
+        {
+            throw new InvalidTimeInputException("Task cant be allocated outside the working period");
+        }
 
         //get employee with no other allocation for the certain working day and the minimum skill
         var employee = await _context.Users
-            .Where(e => !e.TaskAllocations.Any(ta => ta.WorkingDayId == workingDay.Id) // No other allocations on that day (1 to many relationship)
-                        && e.SkillLevel >= task.SkillLevel
-                        && e.DepartmentName == task.Department) // Assuming 'SkillLevel' exists on User
+            // No other allocations on that day and time period - all true in order to reject
+            .Where(e => !e.TaskAllocations.Any(ta =>
+                ta.WorkingDayId == workingDay.Id &&
+                ta.TaskType.StartTime < task.EndTime &&
+                ta.TaskType.EndTime > task.StartTime)
+
+                && e.SkillLevel >= task.SkillLevel
+                && e.DepartmentName == task.Department) // Assuming 'SkillLevel' exists on User
             .OrderBy(e => e.SkillLevel) // Optionally, order by skill level to get the lower-skilled employee first
             .FirstOrDefaultAsync();
         if (employee == null)
@@ -48,6 +60,9 @@ public class TaskAllocationsService(
         };
         //change the task allocation to true - allocated
         task.Allocated = true;
+        //Send email to inform employee about the task
+        await _emailSender.SendEmailAsync(employee.Email, "Task Allocation", $"A new Task has been allocated to you! Task name: {task.Name} date: {task.StartDate}. " +
+            $"See more details at your page.");
         _context.Add(taskAllocation);
         await _context.SaveChangesAsync();
     }

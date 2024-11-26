@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Configuration;
+using TaskManagementSystem.Application.Models.TaskAllocation;
 
 namespace TaskManagementSystem.Application.Services.TaskAllocations;
 
@@ -117,8 +119,6 @@ public class TaskAllocationsService(
         return employeeAllocationVm;
     }
 
-
-
     public async Task<TaskTypeReadOnlyVM> GetUnallocatedTask(int taskId)
     {
         var data = await _context.TaskTypes
@@ -128,7 +128,57 @@ public class TaskAllocationsService(
         return model;
     }
 
-    public async Task<List<EmployeeListVM>> GetEmployees(string? department, int? minimumSkillLevel)
+    public async Task<TaskAllocationVM> GetAllocation(int allocationId)
+    {
+        var data = await _context.TaskAllocations
+            .Where(a => a.Id == allocationId)
+            .Include(a => a.TaskType)
+            .Include(a => a.Employee)
+            .SingleOrDefaultAsync();
+
+        var viewData = _mapper.Map<TaskAllocationVM>(data);
+        return viewData;
+    }
+
+    public async Task<EmployeeEmailVM> GetEmployee(string? id)
+    {
+        var fromUser = await _userService.GetLoggedInUser();
+        if (id == null)
+        {
+            var employeeEmailVm = new EmployeeEmailVM
+            {
+                ToEmail = "example@localhost.com",
+                Subject = string.Empty,
+                Message = string.Empty,
+                FromEmail = fromUser.Email
+            };
+            return employeeEmailVm;
+        }
+        else
+        {
+            var employee = await _userService.GetUserById(id);
+            var employeeEmailVm = new EmployeeEmailVM
+            {
+                ToEmail = employee.Email,
+                Id = employee.Id,
+                Subject = string.Empty,
+                Message = string.Empty,
+                FromEmail = fromUser.Email
+            };
+            return employeeEmailVm;
+        }
+    }
+
+	public async Task SendEmail(EmployeeEmailVM model)
+	{
+		var configuration = new ConfigurationBuilder()
+	        .AddJsonFile("appsettings.json")
+	        .Build();
+		var emailSender = new EmailSender(configuration);
+		await emailSender.SendEmailWithCustomFromAsync(model.Email, model.Subject, model.Message, model.FromEmail);
+	}
+
+	public async Task<List<EmployeeListVM>> GetEmployees(string? department, int? minimumSkillLevel)
     {
         var employees = await _userService.GetEmployees();
         //filter by department
@@ -152,6 +202,25 @@ public class TaskAllocationsService(
             .ThenByDescending(e => e.SkillLevel)
             .ToList();
         return employeesVm;
+    }
+
+    public async Task Remove(int allocationId)
+    {
+        var data = await _context.TaskAllocations
+            .Where(a => a.Id == allocationId)
+			.Include(a => a.TaskType)
+			.Include(a => a.Employee)
+            .SingleOrDefaultAsync();
+
+        if(data != null)
+        {
+            //inform employee about deallocation
+            await _emailSender.SendEmailAsync(data.Employee.Email, "Task Deallocation", $"You have been deallocated from the task: {data.TaskType.Name} - date: {data.TaskType.StartDate}");
+            data.TaskType.Allocated = false;
+			_context.Remove(data);
+			await _context.SaveChangesAsync();
+		}
+        
     }
 }
 

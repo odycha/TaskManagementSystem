@@ -51,12 +51,13 @@
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item" asp-controller="TaskTypes" asp-action="Index">Tasks</a></li>
                                     <li><a class="dropdown-item" asp-controller="TaskTypes" asp-action="CalendarIndex">Task Calendar</a></li>                         
-                                    @if (User.IsInRole(Roles.Administrator)){
                                     <li><a class="dropdown-item" asp-controller="TaskAllocation" asp-action="ViewEmployees">View Employees</a></li>
-                                    }
                                 </ul>
                             </li>
                         }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="TaskAllocation" asp-action="SendMailToEmployee">Send Email</a>
+                        </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

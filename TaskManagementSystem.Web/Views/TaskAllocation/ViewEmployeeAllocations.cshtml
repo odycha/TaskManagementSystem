@@ -7,6 +7,7 @@
 <h1> Here are the task allocations for the employee : @Model.FirstName @Model.LastName</h1>
 <br />
 
+
 <div>
 	<dl class="row">
 		<dt class="col-sm-2">
@@ -50,11 +51,10 @@
 
 @if (Model.TaskAllocations.Any())
 {
-	@foreach(var allocation in Model.TaskAllocations)
-	{
-		<div class="table-responsive">
+	<div class="table-responsive">
 			<table class="table table-hover">
 				<thead>
+				<tr>
 					<!--TODO: Html.DisplayNameFor doesnt work here why??-->
 					<th>
 						Date
@@ -77,9 +77,12 @@
 					<th>
 						Description
 					</th>
-
+				</tr>
 				</thead>
 				<tbody>
+				@foreach (var allocation in Model.TaskAllocations)
+				{
+					<tr>
 					<td>
 						@allocation.WorkingDay.Day
 					</td>
@@ -101,12 +104,31 @@
 					<td>
 						@allocation.TaskType.Description
 					</td>
+					<td>
+						@if(User.IsInRole(Roles.Administrator)){
+							<a asp-action="Deallocate" class="btn btn-warning" asp-route-id="@allocation.Id">Deallocate </a>
+						}
+					</td>
+					</tr>
+				}
 				</tbody>
 			</table>
 		</div>
-	}
+	
 }
 else
 {
 	<h1>Currently the employee doesnt have any task allocations</h1>
+}
+<br />
+<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
+@if (User.IsInRole(Roles.Administrator))
+{
+	<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
+	<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
+}
+@if (User.IsInRole(Roles.TaskManager))
+{
+	<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
+	<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b">Send Email to Administrator</a>
 }

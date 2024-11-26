@@ -5,9 +5,10 @@ using TaskManagementSystem.Application.Services.TaskTypes;
 
 namespace TaskManagementSystem.Web.Controllers;
 
-[Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+
 public class TaskTypesController(ITaskTypesService _taskTypesService) : Controller
 {
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     public async Task <IActionResult> Index(DateOnly? fromDate, DateOnly? toDate, TimeOnly? fromTime, TimeOnly? toTime,
         string? department, int? minimumSkillLevel, bool? isAllocatted, bool? taskOutOfWorkingPeriod ,bool noSuitableEmployee = false, string? taskName = null)
     {
@@ -26,7 +27,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         ViewBag.taskName = taskName;
         return View(viewData);
     }
-
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     public async Task<IActionResult> CalendarIndex(string? department, int? minimumSkillLevel, bool? isAllocatted)
 
     {
@@ -38,7 +39,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         ViewBag.isAllocatted = isAllocatted;
         return View(viewData);
     }
-
+    [Authorize]
     public async Task <IActionResult> Details(int? id)
     {
         if (id == null)
@@ -52,7 +53,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         }
         return View(viewData);
     }
-
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     // GET:
     public async Task<IActionResult> Create()
     {
@@ -60,6 +61,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
     }
 
     // POST:
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TaskTypeCreateVM taskTypeCreate)
@@ -83,6 +85,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
     }
 
     // GET:
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     public async Task<IActionResult> Edit(int? id)
     {
         if(id == null)
@@ -98,6 +101,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
     }
 
     // POST:
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(TaskTypeEditVM taskTypeEdit)
@@ -120,6 +124,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
 
     // GET:
     //Delete confirmation page
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -135,6 +140,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
     }
 
     // POST:
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)

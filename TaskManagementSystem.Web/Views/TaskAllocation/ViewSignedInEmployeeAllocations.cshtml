@@ -1,72 +1,80 @@
 ﻿@model IEnumerable<TaskAllocationVM>
 
 @{
-	ViewData["Title"] = "ViewSingedInEmployeeAllocations";
+    ViewData["Title"] = "ViewSingedInEmployeeAllocations";
 }
+
+<h1>My Task Allocations</h1>
 
 @if (Model.Any())
 {
-	<h1>Here are your task allocations:</h1>
-	<br />
-	<div class="table-responsive">
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>
-						Date
-					</th>
-					<th>
-						Start Time
-					</th>
-					<th>
-						End Time
-					</th>
-					<th>
-						Task
-					</th>
-					<th>
-						Department
-					</th>
-					<th>
-						Skill Level
-					</th>
-					<th>
-						Description
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-			@foreach(var item in Model)
-			{
-				<tr>
-					<td>
-						@item.WorkingDay.Day
-					</td>
-					<td>
-						@item.WorkingDay.StartTime
-					</td>
-					<td>
-						@item.WorkingDay.EndTime
-					</td>
-					<td>
-						@item.TaskType.Name
-					</td>
-					<td>
-						@item.TaskType.Department
-					</td>
-					<td>
-						@item.TaskType.SkillLevel
-					</td>
-					<td>
-						@item.TaskType.Description
-					</td>
-				</tr>
-			}
-			</tbody>
-		</table>
-	</div>
+    <!-- FullCalendar -->
+    <div id="calendar"></div>
 }
 else
 {
-	<h1>Currently you dont have any Task allocations!</h1>
+    <h1>Currently, you don't have any Task allocations!</h1>
+}
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+
+            // Convert the Model data to JSON for FullCalendar events
+            var events = @Html.Raw(Json.Serialize(
+        Model.Select(item => new
+        {
+            id = item.TaskType.Id,
+            title = item.TaskType.Name,
+            start = $"{item.WorkingDay.Day:yyyy-MM-dd}T{item.WorkingDay.StartTime:hh\\:mm}",
+            end = $"{item.WorkingDay.Day:yyyy-MM-dd}T{item.WorkingDay.EndTime:hh\\:mm}",
+            color = "#28a745", // Use green for events
+            extendedProps = new
+            {
+                department = item.TaskType.Department,
+                skillLevel = item.TaskType.SkillLevel,
+                description = item.TaskType.Description
+            }
+        })
+        ));
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                timeZone: 'local', // Use the browser's local time zone
+                events: events, // Bind events
+                eventDisplay: 'block', // Stretches the event
+                forceEventDuration: true, // Ensures all events have duration
+                slotMinTime: "00:00:00", // Earliest time
+                slotMaxTime: "24:00:00", // Latest time
+                eventTimeFormat: { // Format event times
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false // 24-hour format
+                },
+                allDaySlot: false,
+
+                eventClick: function (info) {
+                    // Redirect to the Edit action with the event ID
+                    var editUrl = '@Url.Action("Details", "TaskTypes")' + '?id=' + info.event.id;
+                    window.location.href = editUrl;
+                },
+                eventMouseEnter: function (info) {
+                    info.el.style.cursor = 'pointer'; // Change the cursor to a pointer
+                },
+                eventMouseLeave: function (info) {
+                    info.el.style.cursor = ''; // Revert to the default cursor
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
 }

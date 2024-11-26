@@ -13,8 +13,9 @@ public class TaskTypesService(
         //get the data from the database
         var taskTypes = await _context.TaskTypes
             .OrderBy(t => t.StartDate)
-            .OrderBy(t => t.StartTime)
-            .ToListAsync();
+			.ThenBy(t => t.StartTime)
+			.ThenBy(t => t.EndTime)
+			.ToListAsync();
         //TODO: PUT FILTER LOGIC IN METHOD?
         if (taskTypes == null)
         {
@@ -141,8 +142,10 @@ public class TaskTypesService(
                     DepartmentName = employee.DepartmentName,
                     SkillLevel = employee.SkillLevel,
                     Email = employee.Email
-                }
+                },
+                TaskAllocationId = data.TaskAllocation.Id
             };
+
             return viewData;
         }
         else

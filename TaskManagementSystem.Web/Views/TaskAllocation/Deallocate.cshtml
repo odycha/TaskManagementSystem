@@ -1,0 +1,91 @@
+﻿@model TaskAllocationVM
+
+@{
+	ViewData["Title"] = "Deallocate";
+}
+
+<h1>Are you sure you want to deallocate this task?</h1>
+
+<div>
+	<dl class="row">
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.TaskType.Name)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.TaskType.Name)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.TaskType.StartDate)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.TaskType.StartDate)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.TaskType.StartTime)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.TaskType.StartTime)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.TaskType.EndTime)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.TaskType.EndTime)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.TaskType.Department)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.TaskType.Department)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.TaskType.SkillLevel)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.TaskType.SkillLevel)
+		</dd>
+	</dl>
+</div>
+<hr />
+<h1>Which was allocated to the following employee:</h1>
+<div>
+	<dl class="row">
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Employee.FirstName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.Employee.FirstName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Employee.LastName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.Employee.LastName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Employee.DepartmentName)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.Employee.DepartmentName)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Employee.SkillLevel)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.Employee.SkillLevel)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Employee.Email)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(Model => Model.Employee.Email)
+		</dd>
+	</dl>
+</div>
+
+<form asp-action="Deallocate">
+	<a asp-action="Details" asp-controller="TaskTypes" asp-route-id="@Model.TaskType.Id" class="btn btn-success">Back to Task</a>
+	<a asp-action="ViewEmployeeAllocations" asp-route-id="@Model.Employee.Id" class="btn btn-primary">Back to Employee</a>
+	<input type="hidden" asp-for="Id" />
+	<input type="submit" value="Deallocate Task" class="btn btn-danger" />
+</form>

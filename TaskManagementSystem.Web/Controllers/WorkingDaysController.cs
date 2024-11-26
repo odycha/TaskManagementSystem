@@ -5,14 +5,16 @@ namespace TaskManagementSystem.Web.Controllers;
 
 public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Controller
 {
+    [Authorize]
     public async Task<IActionResult> Index()
     {
         var viewData = await _workingDaysService.GetAll();
         return View(viewData);
     }
 
-	[Authorize(Roles = Roles.Administrator)]
+
 	//Get
+	[Authorize(Roles = Roles.Administrator)]
 	public async Task<IActionResult> Create(
         bool comingFromAllocation = false, 
         DateOnly? workingDayDate = null)
@@ -51,8 +53,9 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
         return View(workingDayCreate);
     }
 
-    //Get
-    public async Task<IActionResult> Edit (int? id)
+	//Get
+	[Authorize(Roles = Roles.Administrator)]
+	public async Task<IActionResult> Edit (int? id)
     {
         if (id == null)
         {
@@ -69,7 +72,8 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
     //post
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit (WorkingDayCreateVM model)
+	[Authorize(Roles = Roles.Administrator)]
+	public async Task<IActionResult> Edit (WorkingDayCreateVM model)
     {
         if (ModelState.IsValid)
         {
@@ -93,6 +97,7 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
 	}
 
 	//Get
+	[Authorize(Roles = Roles.Administrator)]
 	[Authorize(Roles = Roles.Administrator)]
 	public async Task<IActionResult> Delete(int? id)
 	{

@@ -68,6 +68,7 @@
             var events = @Html.Raw(Json.Serialize(
                 Model.Select(item => new
                     {
+                    id = item.Id,
                     title = $"{item.Name}",
                     start = $"{item.StartDate:yyyy-MM-dd}T{item.StartTime:hh\\:mm}",
                     end = $"{item.StartDate:yyyy-MM-dd}T{item.EndTime:hh\\:mm}",
@@ -80,22 +81,37 @@
                 })
             ));
 
-             var calendar = new FullCalendar.Calendar(calendarEl, {
-                 initialView: 'dayGridMonth', // Default view
-                 headerToolbar: {
-                     left: 'prev,next today',
-                     center: 'title',
-                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                 },
-                events: events,// Pass events
-                eventDisplay: 'block',
-                 eventClick: function (info) {
-                         // Display details on event click (optional)
-                     alert('Task: ' + info.event.title +
-                           '\nDepartment: ' + info.event.extendedProps.department +
-                           '\nSkill Level: ' + info.event.extendedProps.skillLevel);
-                 }
-             });
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth', // Week view
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: events, // Bind events
+                eventDisplay: 'block', // Stretches the event
+                forceEventDuration: true, // Ensures all events have duration
+                slotMinTime: "00:00:00", // Earliest time
+                slotMaxTime: "24:00:00", // Latest time
+                eventTimeFormat: { // Format event times
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hourCycle: 'h23'
+                },
+                allDaySlot: false,
+
+                eventClick: function (info) {
+                    // Redirect to the Edit action with the event ID
+                    var editUrl = '@Url.Action("Details", "TaskTypes")' + '?id=' + info.event.id;
+                    window.location.href = editUrl;
+                },
+                eventMouseEnter: function (info) {
+                    info.el.style.cursor = 'pointer'; // Change the cursor to a pointer
+                },
+                eventMouseLeave: function (info) {
+                    info.el.style.cursor = ''; // Revert to the default cursor
+                }
+            });
 
                  calendar.render();
              });

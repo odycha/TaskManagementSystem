@@ -99,14 +99,46 @@
 			<br />
 		</dl>
 	</div>
+	@if (User.IsInRole(Roles.Administrator))
+	{
+		<a asp-controller="TaskAllocation" asp-action="Deallocate" class="btn btn-danger" asp-route-id="@Model.TaskAllocationId">Deallocate Task</a>
+	}
+	@if (User.IsInRole(Roles.TaskManager))
+	{
+		<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.employeeListVm.Id">Send Email to Employee</a>
+	}
+}
+else
+{
+	@if (User.IsInRole(Roles.Administrator))
+	{
+		<a asp-controller="TaskAllocation" asp-action="AllocateTask" class="btn btn-success" asp-route-id="@Model.Id">Allocate Task</a>
+	}
 }
 
-<a asp-action="Index" class="btn btn-primary">Back to List</a>
 
-
+@if (User.IsInRole(Roles.Administrator))
+{
+	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
+}
+@if (User.IsInRole(Roles.TaskManager))
+{
+	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b">Send Email to Administrator</a>
+}
+@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
+{
+	<a asp-action="Index" class="btn btn-primary">Back to List</a>
+	<a asp-action="CalendarIndex" class="btn btn-info">Task Calendar</a>
+}
+@if (User.IsInRole(Roles.Employee))
+{
+	<a asp-controller="TaskAllocation" asp-action="ViewSignedInEmployeeAllocations" class="btn btn-info">Back to Calendar</a>
+	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
+}
 
 
 
 <!--1.col-sm-2: This column occupies 2/12 of the row's width (16.67% of the row) on small devices and larger.
 2. col-sm-10: This column occupies 10/12 of the row's width (83.33% of the row) on small devices and larger.
 Together, they span the full row (2 + 10 = 12).-->
+

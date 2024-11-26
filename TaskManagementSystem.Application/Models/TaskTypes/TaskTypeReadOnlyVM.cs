@@ -28,6 +28,10 @@ public class TaskTypeReadOnlyVM
 
     [DisplayName("Task Allocation")]
     public bool Allocated { get; set; }
+
+    public int? TaskAllocationId { get; set; }
+
+	//Use this when you want to ensure the property is always ready to use and avoid null reference exceptions.
 	public EmployeeListVM employeeListVm { get; set; } = new EmployeeListVM();
 
 }

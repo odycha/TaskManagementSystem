@@ -3,12 +3,23 @@
 @{
     ViewData["Title"] = "Register";
 }
+<style>
+    .ui-datepicker {
+        background-color: white !important;
+        z-index: 9999 !important;
+        border: 1px solid #ccc;
+    }
 
-<h1>@ViewData["Title"]</h1>
+        .ui-datepicker a {
+            color: #000;
+        }
+</style>
+
 
 <div class="row">
-    <div class="col-md-8">
+    <div class=" h-100 d-flex align-items-center justify-content-center">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h1>@ViewData["Title"]</h1>
             <h2>Create a new account.</h2>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
@@ -29,7 +40,7 @@
             </div>
             <div class="form-floating mb-3">
                 <!--Added type="text" verride the browser's native datepicker behavior. You can achieve this by changing the input type for the DateOfBirth field from type="date" (which triggers the built-in picker) to type="text"-->
-                <input asp-for="Input.DateOfBirth" type="text" class="form-control" aria-required="true" placeholder="Select Date" id="DateOfBirth" />
+                <input asp-for="Input.DateOfBirth" type="text" class="form-control" aria-required="true" placeholder="Select Date" id="DateOfBirth" value="1/1/1990" />
                 <label asp-for="Input.DateOfBirth">Date Of Birth</label>
                 <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
             </div>

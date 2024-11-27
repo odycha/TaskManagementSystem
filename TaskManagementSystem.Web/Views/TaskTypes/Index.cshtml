@@ -5,6 +5,7 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
 	ViewData["Title"] = "Index";
 }
 
+
 <div class="d-flex flex-wrap align-items-center gap-3">
     <h1>Tasks</h1>
     <p>
@@ -194,8 +195,8 @@ else
 						    }
                         </td>
                         <td>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary me-2">Details</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning me-2">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning ">Edit</a>
                             @if (User.IsInRole(Roles.Administrator))
                             {
                                 @if (item.Allocated == false)
@@ -203,7 +204,7 @@ else
                                     <a asp-action="AllocateTask" asp-controller="TaskAllocation" asp-route-id="@item.Id" class="btn btn-success">Allocate</a>
                                 }
                             }
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger me-2">Delete</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger ">Delete</a>
                             <!--asp-route-id: Defines a route parameter named id.
                              The value of the route parameter is set to item.Id (server-side code), where item is an object in the current context, and Id is its property.Generated URL: 
                              When the Razor view is rendered, the asp-route-id generates a URL that includes the id as a query string or route parameter, depending on the route configuration.

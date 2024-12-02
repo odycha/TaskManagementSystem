@@ -29,6 +29,8 @@ public class TaskTypeEditVM
 	[MaxLength(200)]
     public string Description { get; set; } = string.Empty;
 
+	public bool Completed { get; set; }
+
     //TODO: WHEN I EDIT A TASK IT BECOMES ALLOCATED AND ALL ALLOCATIONS GET DELETED
 
 }

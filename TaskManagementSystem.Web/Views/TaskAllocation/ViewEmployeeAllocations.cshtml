@@ -48,87 +48,407 @@
 		</dd>
 	</dl>
 </div>
+<hr />
+<form asp-action="ViewEmployeeAllocations" method="get">
+	<!--Date Filtering-->
+	<div class="d-flex flex-wrap align-items-center gap-3">
 
+		<div class="form-group">
+			<label for="fromDate" class="control-label">From Date</label>
+			<div class="d-flex align-items-center gap-2">
+				<input id="fromDate" class="form-control fromDate" name="fromDate" style="width: 240px;"
+					   value="@ViewBag.fromDate?.ToString("dddd, d MMMM, yyyy")" />
+				<button type="button" class="btn btn-secondary clear-date" data-target="#fromDate">C</button>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="toDate" class="control-label">To Date</label>
+			<div class="d-flex align-items-center gap-2">
+				<input id="toDate" class="form-control toDate" name="toDate" style="width: 240px;"
+					   value="@ViewBag.toDate?.ToString("dddd, d MMMM, yyyy")" />
+				<button type="button" class="btn btn-secondary clear-date" data-target="#toDate">C</button>
+			</div>
+		</div>
+
+
+		<!--Time Filtering-->
+		<div class="d-flex flex-wrap align-items-center gap-3">
+
+			<div class="form-group">
+				<label for="fromTime" class="control-label">From Time</label>
+				<div class="d-flex align-items-center gap-2">
+					<input id="fromTime" class="form-control fromTime" name="fromTime" style="width: 240px;"
+						   value="@ViewBag.fromTime?.ToString("HH:mm")" />
+					<button type="button" class="btn btn-secondary clear-time" data-target="#fromTime">C</button>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="toTime" class="control-label">To Time</label>
+				<div class="d-flex align-items-center gap-2">
+					<input id="toTime" class="form-control toTime" name="toTime" style="width: 240px;"
+						   value="@ViewBag.toTime?.ToString("HH:mm")" />
+					<button type="button" class="btn btn-secondary clear-time" data-target="#toTime">C</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex flex-wrap align-items-center gap-3">
+			<!-- Minimum Skill Level Dropdown -->
+			<div class="form-group">
+				<label for="minimumSkillLevel" class="control-label">Minimum Skill Level</label>
+				<select class="form-control" id="minimumSkillLevel" name="minimumSkillLevel">
+					<option value="" selected="@(ViewBag.minimumSkillLevel == null)">Any Skill Level</option>
+					@for (int i = 1; i <= 10; i++)
+					{
+						<option value="@i" selected="@(ViewBag.minimumSkillLevel == i)">@i</option>
+					}
+				</select>
+			</div>
+
+			<!-- Completion Dropdown -->
+			<div class="form-group">
+				<label for="isCompleted" class="control-label">Completion</label>
+				<select class="form-control" id="isCompleted" name="isCompleted">
+					<option value="" selected="@(ViewBag.isCompleted == null)">All</option>
+					<option value="true" selected="@(ViewBag.isCompleted == true)">Completed</option>
+					<option value="false" selected="@(ViewBag.isCompleted == false)">Not Completed</option>
+				</select>
+			</div>
+
+			<!-- Submit Button -->
+			<div class="form-group">
+				<label class="form-label d-block" style="visibility: hidden;">Filter</label>
+				<button type="submit" class="btn btn-success">Filter</button>
+			</div>
+		</div>
+
+</form>
+<hr />
 @if (Model.TaskAllocations.Any())
 {
-	<div class="table-responsive">
-			<table class="table table-hover">
-				<thead>
-				<tr>
-					<!--TODO: Html.DisplayNameFor doesnt work here why??-->
-					<th>
-						Date
-					</th>
-					<th>
-						Start Time
-					</th>
-					<th>
-						End Time
-					</th>
-					<th>
-						Task
-					</th>
-					<th>
-						Department
-					</th>
-					<th>
-						Skill level
-					</th>
-					<th>
-						Description
-					</th>
-				</tr>
-				</thead>
-				<tbody>
-				@foreach (var allocation in Model.TaskAllocations)
-				{
+	<div class="container mt-4">
+		<div>
+			<h1 class="text-center mb-3">Tasks List</h1> <!-- Add bottom margin to give space below the heading -->
+		</div>
+
+		<div class="table-responsive mb-4">
+				<table class="table table-hover">
+					<thead>
 					<tr>
-					<td>
-						@allocation.WorkingDay.Day
-					</td>
-					<td>
-						@allocation.WorkingDay.StartTime
-					</td>
-					<td>
-						@allocation.WorkingDay.EndTime
-					</td>
-					<td>
-						@allocation.TaskType.Name
-					</td>
-					<td>
-						@allocation.TaskType.Department
-					</td>
-					<td>
-						@allocation.TaskType.SkillLevel
-					</td>
-					<td>
-						@allocation.TaskType.Description
-					</td>
-					<td>
-						@if(User.IsInRole(Roles.Administrator)){
-							<a asp-action="Deallocate" class="btn btn-warning" asp-route-id="@allocation.Id">Deallocate </a>
-						}
-					</td>
+						<!--TODO: Html.DisplayNameFor doesnt work here why??-->
+						<th>
+							Date
+						</th>
+						<th>
+							Start Time
+						</th>
+						<th>
+							End Time
+						</th>
+						<th>
+							Task
+						</th>
+						<th>
+							Department
+						</th>
+						<th>
+							Skill level
+						</th>
+						<th>
+							Description
+						</th>
+						<th>
+							Completed
+						</th>
 					</tr>
-				}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+					@foreach (var allocation in Model.TaskAllocations)
+					{
+						<tr>
+						<td>
+							@allocation.WorkingDay.Day
+						</td>
+						<td>
+							@allocation.WorkingDay.StartTime
+						</td>
+						<td>
+							@allocation.WorkingDay.EndTime
+						</td>
+						<td>
+							@allocation.TaskType.Name
+						</td>
+						<td>
+							@allocation.TaskType.Department
+						</td>
+						<td>
+							@allocation.TaskType.SkillLevel
+						</td>
+						<td>
+							@allocation.TaskType.Description
+						</td>
+						<td>
+							@if(allocation.TaskType.Completed == true){
+								<span class="badge rounded-pill bg-info">
+									<i class="bi bi-check-circle"></i> Completed
+								</span>
+							}
+							else{
+								<span class="badge rounded-pill bg-danger">
+									<i class="bi bi-check-circle"></i> Not Completed
+								</span>
+							}
+						</td>
+						<td>
+							@if(User.IsInRole(Roles.Administrator) && allocation.TaskType.Completed == false){
+								<a asp-action="Deallocate" class="btn btn-warning" asp-route-id="@allocation.Id">Deallocate </a>
+							}
+						</td>
+						</tr>
+					}
+					</tbody>
+				</table>
+		</div>
+
+		<div>
+			<h1 class="text-center mt-4">Statistics</h1> <!-- Add top margin to add space between the table and the heading -->
 		</div>
 	
+
+			<div class="mb-4 d-flex justify-content-center">
+				<div style="width: 1000px;">
+					<canvas id="barchart"></canvas>
+				</div>
+			</div>
+	
+		
+
+
+	</div>
+	<hr />
 }
 else
 {
-	<h1>Currently the employee doesnt have any task allocations</h1>
+	<h1>No task allocations</h1>
+	<br />
 }
 <br />
-<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
-@if (User.IsInRole(Roles.Administrator))
-{
-	<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
-	<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
-}
-@if (User.IsInRole(Roles.TaskManager))
-{
-	<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
-	<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b">Send Email to Administrator</a>
+<div>
+	<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
+	@if (User.IsInRole(Roles.Administrator))
+	{
+		<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
+		<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
+	}
+	@if (User.IsInRole(Roles.TaskManager))
+	{
+		<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
+		<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b">Send Email to Administrator</a>
+	}
+</div>
+
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+
+	<script>
+		$(function () {
+			// Datepicker configuration for fromDate and toDate
+			$(".fromDate").datepicker({
+				dateFormat: "DD, d MM, yy",
+				changeMonth: true,
+				changeYear: true,
+				yearRange: "-10:+10",
+				onClose: function (selectedDate) {
+					if (selectedDate) {
+						$(".toDate").datepicker("option", "minDate", selectedDate);
+					} else {
+						$(".toDate").datepicker("option", "minDate", null);
+					}
+				}
+			});
+
+			$(".toDate").datepicker({
+				dateFormat: "DD, d MM, yy",
+				changeMonth: true,
+				changeYear: true,
+				yearRange: "-10:+10",
+				onClose: function (selectedDate) {
+					if (selectedDate) {
+						$(".fromDate").datepicker("option", "maxDate", selectedDate);
+					} else {
+						$(".fromDate").datepicker("option", "maxDate", null);
+					}
+				}
+			});
+
+			//USING MOMENT JS LIBRARY
+			$("#fromTime").timepicker({
+				timeFormat: "HH:mm", // 24-hour format
+				interval: 30,        // 30-minute increments
+				minTime: "05:00",    // Minimum time
+				maxTime: "20:00",    // Maximum time
+				dynamic: false,      // Static dropdown
+				dropdown: true,      // Dropdown instead of scroll
+				scrollbar: true,     // Scrollable
+				change: function (time) {
+					const minTime = $(this).val();
+					if (minTime) {
+						const minMoment = moment(minTime, "HH:mm"); // Parse StartTime
+						const adjustedMinTime = minMoment.add(30, "minutes").format("HH:mm"); // Add 30 minutes
+						$("#toTime").timepicker("option", "minTime", adjustedMinTime); // Set adjusted minTime for EndTime
+					} else {
+						$("#toTime").timepicker("option", "minTime", null); // Reset minTime if StartTime is cleared
+					}
+				}
+			});
+
+			$("#toTime").timepicker({
+				timeFormat: "HH:mm", // 24-hour format
+				interval: 30,        // 30-minute increments
+				minTime: "05:00",    // Minimum time
+				maxTime: "20:00",    // Maximum time
+				dynamic: false,      // Static dropdown
+				dropdown: true,      // Dropdown instead of scroll
+				scrollbar: true,     // Scrollable
+				change: function (time) {
+					const maxTime = $(this).val();
+					if (maxTime) {
+						const maxMoment = moment(maxTime, "HH:mm"); // Parse EndTime
+						const adjustedMaxTime = maxMoment.subtract(30, "minutes").format("HH:mm"); // Subtract 30 minutes
+						$("#fromTime").timepicker("option", "maxTime", adjustedMaxTime); // Set adjusted maxTime for StartTime
+					} else {
+						$("#fromTime").timepicker("option", "maxTime", null); // Reset maxTime if EndTime is cleared
+					}
+				}
+			});
+
+			// Handle clear button click for both date and time
+			$(".clear-date, .clear-time").on("click", function () {
+				const target = $($(this).data("target")); // Get the target input element
+				target.val(""); // Clear the input value
+
+				// Reset min and max options for datepickers or timepickers
+				if (target.hasClass("fromDate")) {
+					$(".toDate").datepicker("option", "minDate", null); // Clear "toDate" minDate if "fromDate" is cleared
+				} else if (target.hasClass("toDate")) {
+					$(".fromDate").datepicker("option", "maxDate", null); // Clear "fromDate" maxDate if "toDate" is cleared
+				} else if (target.hasClass("fromTime")) {
+					$("#toTime").timepicker("option", "minTime", null); // Clear "toTime" minTime if "fromTime" is cleared
+				} else if (target.hasClass("toTime")) {
+					$("#fromTime").timepicker("option", "maxTime", null); // Clear "fromTime" maxTime if "toTime" is cleared
+				}
+			});
+		});
+
+
+		//Chart.js
+		$(function () {
+			var barCanvas = document.getElementById("barchart");
+
+			// Pass data from the Razor model using JSON
+			var taskAllocations = @Html.Raw(Json.Serialize(Model.TaskAllocations));
+			 
+
+			// Initialize data arrays
+			var completedTasks = Array(10).fill(0); // Completed counts for skill levels 1 to 10
+			var notCompletedTasks = Array(10).fill(0); // Not completed counts for skill levels 1 to 10
+
+			// Process task allocations
+			if (taskAllocations && taskAllocations.length > 0) {
+				taskAllocations.forEach(function (task) {
+					if (task.taskType && task.taskType.skillLevel >= 1 && task.taskType.skillLevel <= 10) {
+						var skillIndex = task.taskType.skillLevel - 1; // Convert skill level to array index
+						if (task.taskType.completed) {
+							completedTasks[skillIndex]++;
+						} else {
+							notCompletedTasks[skillIndex]++;
+						}
+					}
+				});
+			}
+
+			// Create datasets
+			var completedDataset = {
+				label: 'Completed',
+				data: completedTasks,
+				backgroundColor: 'rgb(75, 192, 192)',
+				borderWidth: 1
+			};
+
+			var notCompletedDataset = {
+				label: 'Not Completed',
+				data: notCompletedTasks,
+				backgroundColor: 'rgb(255, 99, 132)',
+				borderWidth: 1
+			};
+
+			// Define dataset values
+			var datasetValues = {
+				labels: Array.from({ length: 10 }, (_, i) => i + 1), // Skill levels 1 to 10
+				datasets: [completedDataset, notCompletedDataset]
+			};
+
+			// Define chart options
+			var chartOptions = {
+				responsive: true,
+				scales: {
+					x: {
+						title: {
+							display: true,
+							text: 'Skill Levels',
+							font: {
+								weight: 'bold',
+								size: 20 // Make the x-axis title bold
+							}
+						},
+						
+					},
+					y: {
+						beginAtZero: true,
+						ticks: {
+							stepSize: 1,// Increment by 1
+							font: {
+								weight: 'bold',
+								size: 15// Make the y-axis title bold
+							} 
+						},
+                        grace: '10%',
+						title: {
+							display: true,
+							text: 'Number of Tasks',
+							font: {
+								weight: 'bold',
+								size: 20// Make the y-axis title bold
+							}
+						}
+					}
+				},
+				plugins: {
+					legend: {
+						position: 'top',
+								 labels: {
+							// This more specific font property overrides the global property
+							font: {
+								weight: 'bold',
+								size: 20
+							}
+						}
+					}
+				}
+			};
+
+			// Render the bar chart
+			new Chart(barCanvas, {
+				type: 'bar',
+				data: datasetValues,
+				options: chartOptions
+			});
+		});
+	</script>
 }

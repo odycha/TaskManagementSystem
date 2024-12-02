@@ -8,7 +8,7 @@ public class EmployeeEmailVM : EmployeeListVM
 	[EmailAddress(ErrorMessage = "Invalid email address format")]
 	[Display(Name = "To Email")]
 	public string ToEmail { get; set; }
-    public string FromEmail { get; set; } = string.Empty;
+    public string? FromEmail { get; set; } 
 
     [Required]
 	[StringLength(40, MinimumLength = 2, ErrorMessage = "Subject must be between 2 and 40 characters")]

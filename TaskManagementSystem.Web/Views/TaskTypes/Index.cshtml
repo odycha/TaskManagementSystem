@@ -6,6 +6,7 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
 }
 
 
+
 <div class="d-flex flex-wrap align-items-center gap-3">
     <h1>Tasks</h1>
     <p>
@@ -27,6 +28,14 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
 {
     <div class="alert alert-warning">
         <strong>Notice:</strong> There is no suitable employee for the Task: @ViewBag.taskName. Try editing your Task or unallocating an employee.
+    </div>
+    <br />
+}
+
+@if (ViewBag.employeeNotified == false)
+{
+    <div class="alert alert-warning">
+        <strong>Notice:</strong> Something went wrong with the email service and the employee didnt get his automatic notification. Please contact technical support.
     </div>
     <br />
 }
@@ -58,25 +67,26 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
     <!--Time Filtering-->
     <div class="d-flex flex-wrap align-items-center gap-3">
 
-    <div class="form-group">
-        <label for="fromTime" class="control-label">From Time</label>
-        <div class="d-flex align-items-center gap-2">
-            <input id="fromTime" class="form-control fromTime" name="fromTime" style="width: 240px;" 
-                   value="@ViewBag.fromTime?.ToString("HH:mm")" />
-            <button type="button" class="btn btn-secondary clear-time" data-target="#fromTime">C</button>
+        <div class="form-group">
+            <label for="fromTime" class="control-label">From Time</label>
+            <div class="d-flex align-items-center gap-2">
+                <input id="fromTime" class="form-control fromTime" name="fromTime" style="width: 240px;" 
+                       value="@ViewBag.fromTime?.ToString("HH:mm")" />
+                <button type="button" class="btn btn-secondary clear-time" data-target="#fromTime">C</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="toTime" class="control-label">To Time</label>
+            <div class="d-flex align-items-center gap-2">
+                <input id="toTime" class="form-control toTime" name="toTime" style="width: 240px;" 
+                       value="@ViewBag.toTime?.ToString("HH:mm")" />
+                <button type="button" class="btn btn-secondary clear-time" data-target="#toTime">C</button>
+            </div>
         </div>
     </div>
-
-    <div class="form-group">
-        <label for="toTime" class="control-label">To Time</label>
-        <div class="d-flex align-items-center gap-2">
-            <input id="toTime" class="form-control toTime" name="toTime" style="width: 240px;" 
-                   value="@ViewBag.toTime?.ToString("HH:mm")" />
-            <button type="button" class="btn btn-secondary clear-time" data-target="#toTime">C</button>
-        </div>
-    </div>
-
-
+    
+    <div class="d-flex flex-wrap align-items-center gap-3">
         <!-- Department Dropdown -->
         <div class="form-group">
             <label for="department" class="control-label">Department</label>
@@ -110,14 +120,25 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
             </select>
         </div>
 
+         <!-- Completion Dropdown -->
+        <div class="form-group">
+            <label for="isCompleted" class="control-label">Completion</label>
+                <select class="form-control" id="isCompleted" name="isCompleted">
+                   <option value="" selected="@(ViewBag.isCompleted == null)">All</option>
+                   <option value="true" selected="@(ViewBag.isCompleted == true)">Completed</option>
+                   <option value="false" selected="@(ViewBag.isCompleted == false)">Not Completed</option>
+            </select>
+        </div>
+
         <!-- Submit Button -->
         <div class="form-group">
             <label class="form-label d-block" style="visibility: hidden;">Filter</label>
             <button type="submit" class="btn btn-success">Filter</button>
         </div>
     </div>
+    
 </form>
-
+<br />
 <br />
 <!--Let's clarify the difference between using just !Model.Any() and checking for both null and empty values in your collection.
 !Model.Any() vs. Model == null || !Model.Any()
@@ -186,25 +207,41 @@ else
                                     <i class="bi bi-x-circle"></i> Not Allocated   <!--Instead of plain text, add icons to the allocated/unallocated badges for better visual clarity. Note: Requires including Bootstrap Icons in your layout if not already done -->
                                                           
                                 </span>
-						    }
-						    else
-						    {
-							    <span class="badge rounded-pill bg-success">
-                                    <i class="bi bi-check-circle"></i> Allocated
-                                </span>
+                            }
+                            else
+                            {
+                                if (item.Completed == true)
+                                {
+                                    <span class="badge rounded-pill bg-info">
+                                        <i class="bi bi-check-circle"></i> Completed
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill bg-success">
+                                        <i class="bi bi-check-circle"></i> Allocated
+                                    </span>
+                                }
 						    }
                         </td>
                         <td>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning ">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary ps-2 pe-2">Details</a>
+                            @if (item.Completed == false)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning ps-2 pe-2">Edit</a>
+                            }
                             @if (User.IsInRole(Roles.Administrator))
                             {
                                 @if (item.Allocated == false)
                                 {
-                                    <a asp-action="AllocateTask" asp-controller="TaskAllocation" asp-route-id="@item.Id" class="btn btn-success">Allocate</a>
+                                    <a asp-action="AllocateTask" asp-controller="TaskAllocation" asp-route-id="@item.Id" class="btn btn-success ps-2 pe-2">Allocate</a>
                                 }
                             }
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger ">Delete</a>
+                            @if (item.Completed == false)
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger ps-2 pe-2">Delete</a>
+                            }
+                           
                             <!--asp-route-id: Defines a route parameter named id.
                              The value of the route parameter is set to item.Id (server-side code), where item is an object in the current context, and Id is its property.Generated URL: 
                              When the Razor view is rendered, the asp-route-id generates a URL that includes the id as a query string or route parameter, depending on the route configuration.

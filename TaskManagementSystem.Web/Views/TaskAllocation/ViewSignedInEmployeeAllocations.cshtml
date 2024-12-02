@@ -4,12 +4,64 @@
     ViewData["Title"] = "ViewSingedInEmployeeAllocations";
 }
 
+<style>
+    .calendar-legend {
+        margin-top: 20px;
+    }
+
+    .calendar-legend ul {
+        padding: 0;
+        display: flex;
+        gap: 20px;
+        list-style-type: none;
+    }
+
+    .calendar-legend li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .legend-color-box {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        border-radius: 3px;
+        margin-right: 5px;
+        border: 1px solid #ccc;
+    }
+
+</style>
+
+
+@if (ViewBag.taskManagerNotified == false)
+{
+    <div class="alert alert-warning">
+        <strong>Notice:</strong> Something went wrong with the email service and the Task Manager didnt get his automatic notification. Please contact technical support.
+    </div>
+    <br />
+}
+
 <h1>My Task Allocations</h1>
 
 @if (Model.Any())
 {
     <!-- FullCalendar -->
     <div id="calendar"></div>
+
+    <div class="calendar-legend mt-4">
+        <h5>Legend:</h5>
+        <ul class="list-unstyled d-flex gap-3 align-items-center">
+            <li class="d-flex align-items-center">
+                <span class="legend-color-box" style="background-color: #07e7eb;"></span>
+                <span>Completed</span>
+            </li>
+            <li class="d-flex align-items-center">
+                <span class="legend-color-box" style="background-color: #dc3545;"></span>
+                <span>Not Completed</span>
+            </li>
+        </ul>
+    </div>
 }
 else
 {
@@ -31,7 +83,7 @@ else
             title = item.TaskType.Name,
             start = $"{item.WorkingDay.Day:yyyy-MM-dd}T{item.WorkingDay.StartTime:hh\\:mm}",
             end = $"{item.WorkingDay.Day:yyyy-MM-dd}T{item.WorkingDay.EndTime:hh\\:mm}",
-            color = "#28a745", // Use green for events
+            color = item.TaskType.Completed ? "#07e7eb" : "#dc3545", // Tirquose for completed, red for not completed
             extendedProps = new
             {
                 department = item.TaskType.Department,

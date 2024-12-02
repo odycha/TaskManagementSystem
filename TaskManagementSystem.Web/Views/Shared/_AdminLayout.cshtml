@@ -83,6 +83,16 @@
                                     <span class="hide-menu ms-2 ps-1">My Task Allocations</span>
                                 </a>
                             </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link sidebar-link success-hover-bg"
+                                   asp-controller="TaskAllocation" asp-action="ViewEmployees"
+                                   aria-expanded="false">
+                                    <span class="aside-icon p-2 bg-light-success rounded-3">
+                                        <i class="ti ti-mood-search fs-7 text-success"></i>
+                                    </span>
+                                    <span class="hide-menu ms-2 ps-1">View Employees</span>
+                                </a>
+                            </li>
                         }
                         @if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
                         {
@@ -123,6 +133,16 @@
                         }
                         @if (User.Identity.IsAuthenticated)
                         {
+                            <li class="sidebar-item">
+                                <a class="sidebar-link sidebar-link success-hover-bg"
+                                   asp-controller="TaskTypes" asp-action="StatisticsVisual"
+                                   aria-expanded="false">
+                                    <span class="aside-icon p-2 bg-light-success rounded-3">
+                                        <i class="ti ti-chart-dots fs-7 text-success"></i>
+                                    </span>
+                                    <span class="hide-menu ms-2 ps-1">Statistics</span>
+                                </a>
+                            </li>
                             <li class="sidebar-item">
                                 <a class="sidebar-link sidebar-link danger-hover-bg"
                                    asp-controller="TaskAllocation" asp-action="SendMailToEmployee"
@@ -219,7 +239,6 @@
             <div class="container-fluid">
                 <div class="card" >
                     <div class="col-md-12">
-   
                             @RenderBody()
                     </div>
                 </div>
@@ -233,6 +252,7 @@
 
     <script src="~/lib/moment.js/moment.min.js"></script>
     <script src="~/lib/timepicker/jquery.timepicker.min.js"></script>
+    <script src="~/lib/chart.js/chart.umd.js"></script>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src='~/lib/fullcalendar/index.global.min.js'></script>

@@ -20,8 +20,9 @@ public class TaskType
     [MaxLength(200)]
     public string Description { get; set; }
 
-    //TODO: Allocated
     public bool Allocated { get; set; }
+
+    public bool Completed { get; set; }
 
     // One-to-One relationship
     //we edited the LeaveTypes so we can access the related TaskAllocation

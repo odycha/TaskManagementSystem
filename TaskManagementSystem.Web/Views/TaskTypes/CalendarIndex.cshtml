@@ -2,13 +2,40 @@
 @{
     ViewData["Title"] = "CalendarIndex";
 }
+<style>
+    .calendar-legend {
+        margin-top: 20px;
+    }
+
+    .calendar-legend ul {
+        padding: 0;
+        display: flex;
+        gap: 20px;
+        list-style-type: none;
+    }
+
+    .calendar-legend li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .legend-color-box {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        border-radius: 3px;
+        margin-right: 5px;
+        border: 1px solid #ccc;
+    }
+</style>
 
 <div class="d-flex flex-wrap align-items-center gap-3">
     <h1>Tasks Calendar</h1>
 </div>
 
 <!-- Filters Section -->
-<form asp-action="Index" method="get">
+<form asp-action="CalendarIndex" method="get">
     <div class="d-flex flex-wrap align-items-center gap-3">
 
         <!-- Department Dropdown -->
@@ -44,6 +71,16 @@
             </select>
         </div>
 
+        <!-- Completion Dropdown -->
+        <div class="form-group">
+            <label for="isCompleted" class="control-label">Completion</label>
+            <select class="form-control" id="isCompleted" name="isCompleted">
+                <option value="" selected="@(ViewBag.isCompleted == null)">All</option>
+                <option value="true" selected="@(ViewBag.isCompleted == true)">Completed</option>
+                <option value="false" selected="@(ViewBag.isCompleted == false)">Not Completed</option>
+            </select>
+        </div>
+
         <!-- Submit Button -->
         <div class="form-group">
             <label class="form-label d-block" style="visibility: hidden;">Filter</label>
@@ -56,6 +93,26 @@
 
 <!-- FullCalendar -->
 <div id="calendar"></div>
+
+<div class="calendar-legend mt-4">
+    <h5>Legend:</h5>
+    <ul class="list-unstyled d-flex gap-3 align-items-center">
+        <li class="d-flex align-items-center">
+            <span class="legend-color-box" style="background-color: #07e7eb;"></span>
+            <span>Completed</span>
+        </li>
+        <li class="d-flex align-items-center">
+            <span class="legend-color-box" style="background-color: #28a745;"></span>
+            <span>Allocated</span>
+        </li>
+        <li class="d-flex align-items-center">
+            <span class="legend-color-box" style="background-color: #dc3545;"></span>
+            <span>Not Allocated</span>
+        </li>
+    </ul>
+</div>
+
+
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
@@ -72,7 +129,11 @@
                     title = $"{item.Name}",
                     start = $"{item.StartDate:yyyy-MM-dd}T{item.StartTime:hh\\:mm}",
                     end = $"{item.StartDate:yyyy-MM-dd}T{item.EndTime:hh\\:mm}",
-                    color = item.Allocated ? "#28a745" : "#dc3545", // Green for allocated, red for unallocated
+                    color = item.Allocated == false
+                            ? "#dc3545"
+                            : item.Completed == true
+                            ? "#07e7eb"
+                            : "#28a745",
                     extendedProps = new
                     {
                         department = item.Department,

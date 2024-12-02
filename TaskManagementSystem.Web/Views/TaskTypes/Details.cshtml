@@ -57,12 +57,36 @@
 			@Html.DisplayFor(Model => Model.Description)
 		</dd>
 		<br />
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(Model => Model.Completed)
+		</dt>
+		<dd class="col-sm-10">
+			@if (Model.Completed == true)
+			{
+				<span class="badge rounded-pill bg-primary">
+					<i class="bi bi-check-circle"></i> Completed
+				</span>
+			}
+			else
+			{
+				<span class="badge rounded-pill bg-warning">
+					<i class="bi bi-check-circle"></i> Not Completed
+				</span>
+			}
+		</dd>
 	</dl>
 </div>
 @if (Model.Allocated == true)
 {
 	<hr />
-	<h1>The task is allocated to the following employee:</h1>
+	@if(Model.Completed == true)
+	{
+		<h1>The task was allocated to the following employee:</h1>
+	}
+	else
+	{
+		<h1>The task is allocated to the following employee:</h1>
+	}
 	<br />
 	<div>
 		<dl class="row">
@@ -101,7 +125,10 @@
 	</div>
 	@if (User.IsInRole(Roles.Administrator))
 	{
-		<a asp-controller="TaskAllocation" asp-action="Deallocate" class="btn btn-danger" asp-route-id="@Model.TaskAllocationId">Deallocate Task</a>
+		if (Model.Completed == false)
+		{
+			<a asp-controller="TaskAllocation" asp-action="Deallocate" class="btn btn-danger" asp-route-id="@Model.TaskAllocationId">Deallocate Task</a>
+		}
 	}
 	@if (User.IsInRole(Roles.TaskManager))
 	{
@@ -134,6 +161,11 @@ else
 {
 	<a asp-controller="TaskAllocation" asp-action="ViewSignedInEmployeeAllocations" class="btn btn-info">Back to Calendar</a>
 	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
+	if(Model.Completed == false)
+	{
+		<a asp-controller="TaskAllocation" asp-action="CompleteTask" class="btn btn-success" asp-route-id="@Model.Id">Complete Task</a>
+	}
+	
 }
 
 

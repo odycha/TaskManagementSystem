@@ -1,4 +1,7 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
+using TaskManagementSystem.Application.Models.TaskAllocation;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TaskManagementSystem.Application.Services.TaskTypes;
 
@@ -6,9 +9,11 @@ public class TaskTypesService(
     ApplicationDbContext _context, 
     IMapper _mapper, 
     IUserService _userService, 
-    IEmailSender _emailSender) : ITaskTypesService
+    IEmailSender _emailSender,
+    IWebHostEnvironment _hostEnvironment) : ITaskTypesService
 {
-    public async Task<List<TaskTypeReadOnlyVM>> GetAll(DateOnly? fromDate, DateOnly? toDate, TimeOnly? fromTime, TimeOnly? toTime, string? department, int? minimumSkillLevel, bool? isAllocatted)
+    public async Task<List<TaskTypeReadOnlyVM>> GetAll(DateOnly? fromDate, DateOnly? toDate, TimeOnly? fromTime, 
+        TimeOnly? toTime, string? department, int? minimumSkillLevel, bool? isAllocatted, bool? isCompleted)
     {
         //get the data from the database
         var taskTypes = await _context.TaskTypes
@@ -79,6 +84,12 @@ public class TaskTypesService(
                 .Where(t => t.Allocated == isAllocatted)
                 .ToList();
         }
+        if (isCompleted.HasValue)
+        {
+            taskTypes = taskTypes
+                .Where(t => t.Completed == isCompleted)
+                .ToList();
+        }
         //created the mapping profile for the conversion to TaskTypeReadOnlyVM
         var viewData = _mapper.Map<List<TaskTypeReadOnlyVM>>(taskTypes);
         return viewData;
@@ -135,6 +146,7 @@ public class TaskTypesService(
                 Description = data.Description,
                 SkillLevel = data.SkillLevel,
                 Allocated = data.Allocated,
+                Completed = data.Completed,
                 employeeListVm = new EmployeeListVM
                 {
                     FirstName = employee.FirstName,
@@ -156,49 +168,87 @@ public class TaskTypesService(
     }
 
 
-    public async Task Remove(int id)
+    public async Task<bool> Remove(int id)
     {
+        bool employeeNotified = false;
         var data = await _context.TaskTypes
             .Include(t => t.TaskAllocation.Employee)
             .FirstOrDefaultAsync(x => x.Id == id);
-        if (data != null)
+        var dataTemp = data;
+        if (data != null && data.Completed == false)
         {
             //if task was allocated inform employee about the removal
-            if (data.Allocated == true)
-            {
-                await _emailSender.SendEmailAsync(data.TaskAllocation.Employee.Email, "Task Deleted", $"The task: {data.Name} that you were assigned has been deleted!");
-            }
             _context.Remove(data);
             await _context.SaveChangesAsync();
+            if (dataTemp.Allocated == true)
+            {
+                var emailTemplatePath = Path.Combine(_hostEnvironment.WebRootPath, "templates", "email_layout.html");
+                var template = await System.IO.File.ReadAllTextAsync(emailTemplatePath);
+                var messageBody = template
+                    .Replace("{UserName}", $"{dataTemp.TaskAllocation.Employee.FirstName} {dataTemp.TaskAllocation.Employee.LastName}")
+                    .Replace("{MessageContent}",
+                    $"The task: {dataTemp.Name} that you were assigned has been deleted!");
+                try
+                {
+                    await _emailSender.SendEmailAsync(dataTemp.TaskAllocation.Employee.Email, "Task Deleted", messageBody);
+                }
+                catch (Exception e)
+                {
+                    return employeeNotified;
+                } 
+            }
+            //Even if there is no allocation nothing will be shown to the user
         }
+        return employeeNotified = true;
     }
 
-    public async Task Edit(TaskTypeEditVM model)
+    public async Task<bool> Edit(TaskTypeEditVM model)
     {
+        bool employeeNotified = false;
         if (model.StartTime >= model.EndTime)
         {
             throw new InvalidTimeInputException("End time must be later than start time");
         }
         //converting to data model
         var taskType = _mapper.Map<TaskType>(model);
+        //iot send the old task name to the employee
+        string oldTaskName = await _context.TaskTypes
+            .Where(t => t.Id == taskType.Id)
+            .Select(t => t.Name)
+            .FirstAsync();
         //if task was allocated - we are deleting the allocation
         //if (taskType.Allocated == true) - i cant type that because when the form is submitted the allocated is defaulted to false
         var allocation = await _context.TaskAllocations
             .Where(a => a.TaskTypeId == taskType.Id)
             .Include(a => a.Employee)
             .SingleOrDefaultAsync();
-        if (allocation != null)
-        {
-            //if task was allocated inform employee about the task edit and allocation deletion
-            {
-                await _emailSender.SendEmailAsync(allocation.Employee.Email, "Task Edited", $"The task: {taskType.Name} that you were assigned has been edited and you were unassigned!");
-            }
-            _context.Remove(allocation);
-            await _context.SaveChangesAsync();
-        }
 
+            
         _context.Update(taskType);
         await _context.SaveChangesAsync();
+
+        //if task was allocated inform employee about the task edit and allocation deletion
+        if (allocation != null)
+        {
+            var employee = allocation.Employee;
+            _context.Remove(allocation);
+            await _context.SaveChangesAsync();
+            var emailTemplatePath = Path.Combine(_hostEnvironment.WebRootPath, "templates", "email_layout.html");
+            var template = await System.IO.File.ReadAllTextAsync(emailTemplatePath);
+            var messageBody = template
+                .Replace("{UserName}", $"{employee.FirstName} {employee.LastName}")
+                .Replace("{MessageContent}",
+                $"The task: {oldTaskName} that you were assigned has been edited and you were unassigned!");
+            try
+            {
+                await _emailSender.SendEmailAsync(employee.Email, "Task Edited", messageBody);
+            }
+            catch (Exception e)
+            {
+                return employeeNotified;
+            }
+        }
+        return employeeNotified = true;
     }
 
 }

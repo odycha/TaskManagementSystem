@@ -4,44 +4,54 @@
 	ViewData["Title"] = "SendMailToEmployee";
 }
 
-<h1>Send an email</h1>
 
 
-<div class="row">
-	<div class="col-md-4">
-		<form asp-action="SendMailToEmployee">
-			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-			<div class="form-group">
-				<label asp-for="ToEmail" class="control-label"></label>
-				<input asp-for="ToEmail" class="form-control" value="@Model.ToEmail" />
-				<span asp-validation-for="ToEmail" class="text-danger"></span>
-			</div>
-			<br />
-			<div class="form-group">
-				<label asp-for="Subject" class="control-label"></label>
-				<input asp-for="Subject" class="form-control" />
-				<span asp-validation-for="Subject" class="text-danger"></span>
-			</div>
-			<br />
-			<div class="form-group">
-				<label asp-for="Message" class="control-label">Message</label>
-				<textarea asp-for="Message" class="form-control" rows="6"></textarea>
-				<span asp-validation-for="Message" class="text-danger"></span>
-			</div>
-			<br />
-			<div>
-				<input type="hidden" asp-for="FromEmail" />
-				<input type="submit" value="Send Email" class="btn btn-success" />
-				@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
-				{
-					<button onclick="window.history.back();" class="btn btn-secondary">Back</button>
-				}
-				@if (User.IsInRole(Roles.Employee))
-				{
-					<a asp-action="ViewSignedInEmployeeAllocations" class="btn btn-primary">Back to Calendar</a>
-				}
-			</div>
-		</form>
+@if (ViewBag.emailSent == false)
+{
+	<div class="alert alert-warning">
+		<strong>Notice:</strong> Email could not be sent. Please contact the technical support.
+	</div>
+	<br />
+}
+
+<div class="container mt-4">
+	<div class="row justify-content-center">
+		<div class="col-md-4 text-center">
+			<h1>Send an email</h1>
+			<form asp-action="SendMailToEmployee">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="form-group">
+					<label asp-for="ToEmail" class="control-label"></label>
+					<input asp-for="ToEmail" class="form-control" value="@Model.ToEmail" />
+					<span asp-validation-for="ToEmail" class="text-danger"></span>
+				</div>
+				<br />
+				<div class="form-group">
+					<label asp-for="Subject" class="control-label"></label>
+					<input asp-for="Subject" class="form-control" />
+					<span asp-validation-for="Subject" class="text-danger"></span>
+				</div>
+				<br />
+				<div class="form-group">
+					<label asp-for="Message" class="control-label">Message</label>
+					<textarea asp-for="Message" class="form-control" rows="6"></textarea>
+					<span asp-validation-for="Message" class="text-danger"></span>
+				</div>
+				<br />
+				<div>
+					<input type="hidden" asp-for="FromEmail" />
+					<input type="submit" value="Send Email" class="btn btn-success" />
+					@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
+					{
+						<button onclick="window.history.back();" class="btn btn-secondary">Back</button>
+					}
+					@if (User.IsInRole(Roles.Employee))
+					{
+						<a asp-action="ViewSignedInEmployeeAllocations" class="btn btn-primary">Back to Calendar</a>
+					}
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
 

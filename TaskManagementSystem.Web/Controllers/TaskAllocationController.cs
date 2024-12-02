@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using TaskManagementSystem.Application.Services.TaskAllocations;
+using TaskManagementSystem.Common.Static;
 
 namespace TaskManagementSystem.Web.Controllers;
 
@@ -21,7 +22,12 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 		{
 			return NotFound();
 		}
-		return View(taskType);
+        //If the task is completed or allocated redirect to home
+        if (taskType.Completed == true || taskType.Allocated == true)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+        return View(taskType);
 	}
 
 	//Post
@@ -30,9 +36,10 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	[Authorize(Roles = Roles.Administrator)]
 	public async Task<IActionResult> AllocateTask(int id)
 	{
-		try
+		bool employeeNotified = false;
+        try
 		{
-			await _taskAllocationService.AllocateTask(id);
+			employeeNotified = await _taskAllocationService.AllocateTask(id);
 		}
 		catch (WorkingDayNotFoundException e)
 		{
@@ -47,11 +54,18 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 			return RedirectToAction("Index", "TaskTypes", new { noSuitableEmployee = true, taskName = e.Message });
 		}
 
-		return RedirectToAction("Index", "TaskTypes");
+		return RedirectToAction("Index", "TaskTypes", new { employeeNotified });
+	}
+
+	[Authorize(Roles = Roles.Employee)]
+	public async Task<IActionResult> CompleteTask(int id)
+	{
+		bool taskManagerNotified = await _taskAllocationService.Complete(id);
+		return RedirectToAction(nameof(ViewSignedInEmployeeAllocations), new {taskManagerNotified});
 	}
 
 	//View All Employees
-	[Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+	[Authorize]
 	public async Task<IActionResult> ViewEmployees(string? department, int? minimumSkillLevel)
 	{
 		var employees = await _taskAllocationService.GetEmployees(department, minimumSkillLevel);
@@ -61,22 +75,30 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	}
 
 	[Authorize(Roles = Roles.Employee)]
-	public async Task<IActionResult> ViewSignedInEmployeeAllocations()
+	public async Task<IActionResult> ViewSignedInEmployeeAllocations(bool? taskManagerNotified)
 	{
 		var allocations = await _taskAllocationService.GetEmployeeAllocations();
+		ViewBag.taskManagerNotified = taskManagerNotified;
 		return View(allocations);
 	}
 
 	//View allocations for a specific employee
-	[Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+	[Authorize]
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!SOSOSOSOSOSOSOSOSOSO!!!! THE ID IN THE VIEW MUST HAVE THE SAME NAME WITH THE ACTION
-	public async Task<IActionResult> ViewEmployeeAllocations(string id)
+	public async Task<IActionResult> ViewEmployeeAllocations(string? id, DateOnly? fromDate, 
+		DateOnly? toDate, TimeOnly? fromTime,TimeOnly? toTime, int? minimumSkillLevel, bool? isCompleted)
 	{
 		if (id == null)
 		{
 			return NotFound();
 		}
-		var allocations = await _taskAllocationService.GetAllocations(id);
+		var allocations = await _taskAllocationService.GetAllocations(id, fromDate, toDate, fromTime, toTime, minimumSkillLevel, isCompleted);
+		ViewBag.fromDate = fromDate;
+		ViewBag.toDate = toDate;
+		ViewBag.toTime = toTime;
+		ViewBag.fromTime = fromTime;
+		ViewBag.minimumSkillLevel = minimumSkillLevel;
+		ViewBag.isCompleted = isCompleted;
 		return View(allocations);
 	}
 
@@ -94,22 +116,26 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	[Authorize]
 	public async Task<IActionResult> SendMailToEmployee(EmployeeEmailVM model)
 	{
-		await _taskAllocationService.SendEmail(model);
-		// Check if the "Referer" header exists
-		var referer = Request.Headers.Referer.ToString();
-		if (!string.IsNullOrEmpty(referer))
+		bool emailSent = await _taskAllocationService.SendEmail(model);
+		if(emailSent == true)
 		{
-			// Redirect back to the previous page
-			return Redirect(referer);
-		}
+            var referer = Request.Headers.Referer.ToString();
+            // Check if the "Referer" header exists
+            if (!string.IsNullOrEmpty(referer))
+            {
+                // Redirect back to the previous page
+                return Redirect(referer);
+            }
 
-		// Fallback if the referer is not available
-		return RedirectToAction("Index", "TaskTypes");
+            // Fallback if the referer is not available
+            return RedirectToAction("Index", "TaskTypes");
+        }
+		else
+		{
+			ViewBag.emailSent = false;
+            return View(model);
+        }
 	}
-
-
-
-
 
 
 	//get
@@ -125,7 +151,12 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 		{
 			return NotFound();
 		}
-		return View(allocationVm);
+        //If the task is completed redirect to home
+        if (allocationVm.TaskType.Completed == true)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+        return View(allocationVm);
 	}
 
 	//post
@@ -134,8 +165,8 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	[Authorize(Roles = Roles.Administrator)]
 	public async Task<IActionResult> DeallocateConfirmed(int id)
 	{
-		await _taskAllocationService.Remove(id);
-		return (RedirectToAction("Index", "TaskTypes"));
+		bool employeeNotified = await _taskAllocationService.Remove(id);
+		return (RedirectToAction("Index", "TaskTypes", new {employeeNotified}));
 	}
 }
 

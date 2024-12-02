@@ -1,0 +1,584 @@
+﻿@model IEnumerable<TaskTypeReadOnlyVM>
+<!--IEnumerable<T> is used over List<T> because it provides more flexibility and allows for different types of collections, making the view more adaptable.
+modelItem is just the parameter name in the lambda expression, and while it’s used for type safety, it doesn’t affect the logic here. It can be renamed without changing the result.-->
+@{
+    ViewData["Title"] = "Statistics";
+}
+
+<form asp-action="StatisticsVisual" method="get">
+    <!--Date Filtering-->
+    <div class="d-flex flex-wrap align-items-center gap-3">
+
+        <div class="form-group">
+            <label for="fromDate" class="control-label">From Date</label>
+            <div class="d-flex align-items-center gap-2">
+                <input id="fromDate" class="form-control fromDate" name="fromDate" style="width: 240px;"
+                       value="@ViewBag.fromDate?.ToString("dddd, d MMMM, yyyy")" />
+                <button type="button" class="btn btn-secondary clear-date" data-target="#fromDate">C</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="toDate" class="control-label">To Date</label>
+            <div class="d-flex align-items-center gap-2">
+                <input id="toDate" class="form-control toDate" name="toDate" style="width: 240px;"
+                       value="@ViewBag.toDate?.ToString("dddd, d MMMM, yyyy")" />
+                <button type="button" class="btn btn-secondary clear-date" data-target="#toDate">C</button>
+            </div>
+        </div>
+
+
+        <!--Time Filtering-->
+        <div class="d-flex flex-wrap align-items-center gap-3">
+
+            <div class="form-group">
+                <label for="fromTime" class="control-label">From Time</label>
+                <div class="d-flex align-items-center gap-2">
+                    <input id="fromTime" class="form-control fromTime" name="fromTime" style="width: 240px;"
+                           value="@ViewBag.fromTime?.ToString("HH:mm")" />
+                    <button type="button" class="btn btn-secondary clear-time" data-target="#fromTime">C</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="toTime" class="control-label">To Time</label>
+                <div class="d-flex align-items-center gap-2">
+                    <input id="toTime" class="form-control toTime" name="toTime" style="width: 240px;"
+                           value="@ViewBag.toTime?.ToString("HH:mm")" />
+                    <button type="button" class="btn btn-secondary clear-time" data-target="#toTime">C</button>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <label class="form-label d-block" style="visibility: hidden;">Filter</label>
+                <button type="submit" class="btn btn-success">Filter</button>
+            </div>
+        </div>
+</form>
+
+<br />
+@if (Model == null || !Model.Any())
+{
+    <h1>No records found.</h1>
+
+}
+
+else
+{
+   <div class="container mt-4">
+        <div>
+            <h1 class="text-center mt-4">Completed Tasks for each Department</h1> 
+        </div>
+        <br />
+        <div class="mb-4 d-flex justify-content-center">
+            <div style="width: 1000px;">
+                <canvas id="barchart1"></canvas>
+            </div>
+        </div>
+        <br />
+        <div class="mb-4 d-flex justify-content-center">
+            <div style="width: 600px;">
+                <canvas id="piechart1"></canvas>
+            </div>
+        </div>
+        <br />
+        <hr />
+        <div>
+            <h1 class="text-center mt-4">Not completed Tasks for each Department</h1>
+        </div>
+        <br />
+        <div class="mb-4 d-flex justify-content-center">
+            <div style="width: 1000px;">
+                <canvas id="barchart2"></canvas>
+            </div>
+        </div>
+        <br />
+        <div class="mb-4 d-flex justify-content-center">
+            <div style="width: 600px;">
+                <canvas id="piechart2"></canvas>
+            </div>
+        </div>
+    </div>
+      
+             
+
+
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+
+    <script>
+        $(function () {
+            // Datepicker configuration for fromDate and toDate
+            $(".fromDate").datepicker({
+                dateFormat: "DD, d MM, yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-10:+10",
+                onClose: function (selectedDate) {
+                    if (selectedDate) {
+                        $(".toDate").datepicker("option", "minDate", selectedDate);
+                    } else {
+                        $(".toDate").datepicker("option", "minDate", null);
+                    }
+                }
+            });
+
+            $(".toDate").datepicker({
+                dateFormat: "DD, d MM, yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-10:+10",
+                onClose: function (selectedDate) {
+                    if (selectedDate) {
+                        $(".fromDate").datepicker("option", "maxDate", selectedDate);
+                    } else {
+                        $(".fromDate").datepicker("option", "maxDate", null);
+                    }
+                }
+            });
+
+            //USING MOMENT JS LIBRARY
+            $("#fromTime").timepicker({
+                timeFormat: "HH:mm", // 24-hour format
+                interval: 30,        // 30-minute increments
+                minTime: "05:00",    // Minimum time
+                maxTime: "20:00",    // Maximum time
+                dynamic: false,      // Static dropdown
+                dropdown: true,      // Dropdown instead of scroll
+                scrollbar: true,     // Scrollable
+                change: function (time) {
+                    const minTime = $(this).val();
+                    if (minTime) {
+                        const minMoment = moment(minTime, "HH:mm"); // Parse StartTime
+                        const adjustedMinTime = minMoment.add(30, "minutes").format("HH:mm"); // Add 30 minutes
+                        $("#toTime").timepicker("option", "minTime", adjustedMinTime); // Set adjusted minTime for EndTime
+                    } else {
+                        $("#toTime").timepicker("option", "minTime", null); // Reset minTime if StartTime is cleared
+                    }
+                }
+            });
+
+            $("#toTime").timepicker({
+                timeFormat: "HH:mm", // 24-hour format
+                interval: 30,        // 30-minute increments
+                minTime: "05:00",    // Minimum time
+                maxTime: "20:00",    // Maximum time
+                dynamic: false,      // Static dropdown
+                dropdown: true,      // Dropdown instead of scroll
+                scrollbar: true,     // Scrollable
+                change: function (time) {
+                    const maxTime = $(this).val();
+                    if (maxTime) {
+                        const maxMoment = moment(maxTime, "HH:mm"); // Parse EndTime
+                        const adjustedMaxTime = maxMoment.subtract(30, "minutes").format("HH:mm"); // Subtract 30 minutes
+                        $("#fromTime").timepicker("option", "maxTime", adjustedMaxTime); // Set adjusted maxTime for StartTime
+                    } else {
+                        $("#fromTime").timepicker("option", "maxTime", null); // Reset maxTime if EndTime is cleared
+                    }
+                }
+            });
+
+            // Handle clear button click for both date and time
+            $(".clear-date, .clear-time").on("click", function () {
+                const target = $($(this).data("target")); // Get the target input element
+                target.val(""); // Clear the input value
+
+                // Reset min and max options for datepickers or timepickers
+                if (target.hasClass("fromDate")) {
+                    $(".toDate").datepicker("option", "minDate", null); // Clear "toDate" minDate if "fromDate" is cleared
+                } else if (target.hasClass("toDate")) {
+                    $(".fromDate").datepicker("option", "maxDate", null); // Clear "fromDate" maxDate if "toDate" is cleared
+                } else if (target.hasClass("fromTime")) {
+                    $("#toTime").timepicker("option", "minTime", null); // Clear "toTime" minTime if "fromTime" is cleared
+                } else if (target.hasClass("toTime")) {
+                    $("#fromTime").timepicker("option", "maxTime", null); // Clear "fromTime" maxTime if "toTime" is cleared
+                }
+            });
+        });
+
+        //Chart.js
+        $(function () {
+            var barCanvas = document.getElementById("barchart1");
+
+            // Pass data from the Razor model using JSON
+            var taskTypes = @Html.Raw(Json.Serialize(Model));
+            console.log("Task Types (Raw Data):", taskTypes); // Log the raw data
+
+            // Initialize data arrays
+            var completedDevelopment = Array(10).fill(0); // Completed counts for skill levels 1 to 10
+            var completedIT = Array(10).fill(0); // Not completed counts for skill levels 1 to 10
+            var completedMarketing = Array(10).fill(0); // Not completed counts for skill levels 1 to 10
+
+            // Process task allocations
+            if (taskTypes && taskTypes.length > 0) {
+                taskTypes.forEach(function (task) {
+                    var skillIndex = task.skillLevel - 1; // Convert skill level to array index
+                    if (task.completed == true) {
+                        if (task.department == "Development") {
+                            completedDevelopment[skillIndex]++;
+                        }
+                        else if (task.department == "IT Support") {
+                            completedIT[skillIndex]++;
+                        }
+                        else if (task.department == "Marketing") {
+                            completedMarketing[skillIndex]++;
+                        }
+                    }
+                });
+            }
+
+            // Create datasets
+            var completedDevelopmentDataset = {
+                label: 'Development',
+                data: completedDevelopment,
+                backgroundColor: 'rgb(75, 192, 192)',
+                borderWidth: 1
+            };
+
+            var completedITDataset = {
+                label: 'IT',
+                data: completedIT,
+                backgroundColor: 'rgb(172, 252, 97)',
+                borderWidth: 1
+            };
+
+            var completedMarketingDataset = {
+                label: 'Marketing',
+                data: completedMarketing,
+                backgroundColor: 'rgb(172, 126, 214)',
+                borderWidth: 1
+            };
+
+            // Define dataset values
+            var datasetValues = {
+                labels: Array.from({ length: 10 }, (_, i) => i + 1), // Skill levels 1 to 10
+                datasets: [completedDevelopmentDataset, completedITDataset, completedMarketingDataset]
+            };
+
+            // Define chart options
+            var chartOptions = {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Skill Levels',
+                            font: {
+                                weight: 'bold',
+                                size: 20 // Make the x-axis title bold
+                            }
+                        },
+
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,// Increment by 1
+                            font: {
+                                weight: 'bold',
+                                size: 15// Make the y-axis title bold
+                            }
+                        },
+                        grace: '10%',
+                        title: {
+                            display: true,
+                            text: 'Completed Tasks',
+                            font: {
+                                weight: 'bold',
+                                size: 20// Make the y-axis title bold
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            // This more specific font property overrides the global property
+                            font: {
+                                weight: 'bold',
+                                size: 20
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Render the bar chart
+            new Chart(barCanvas, {
+                type: 'bar',
+                data: datasetValues,
+                options: chartOptions
+            });
+        });
+
+
+        ////////////PIE 1
+        $(function () {
+            var pieCanvas = document.getElementById("piechart1"); // Change to pie chart canvas
+
+            // Pass data from the Razor model using JSON
+            var taskTypes = @Html.Raw(Json.Serialize(Model));
+            console.log("Task Types (Raw Data):", taskTypes); // Log the raw data
+
+            // Initialize data for completed tasks in each department
+            var completedDevelopment = 0; // Count for completed Development tasks
+            var completedIT = 0; // Count for completed IT tasks
+            var completedMarketing = 0; // Count for completed Marketing tasks
+
+            // Process task allocations
+            if (taskTypes && taskTypes.length > 0) {
+                taskTypes.forEach(function (task) {
+                    if (task.completed == true) {
+                        if (task.department == "Development") {
+                            completedDevelopment++;
+                        }
+                        else if (task.department == "IT Support") {
+                            completedIT++;
+                        }
+                        else if (task.department == "Marketing") {
+                            completedMarketing++;
+                        }
+                    }
+                });
+            }
+
+            // Create datasets for pie chart
+            var completedTasksDataset = {
+                label: 'Completed Tasks by Department',
+                data: [completedDevelopment, completedIT, completedMarketing], // Data for the departments
+                backgroundColor: ['rgb(75, 192, 192)', 'rgb(172, 252, 97)', 'rgb(172, 126, 214)'], // Colors for each slice
+                borderWidth: 1
+            };
+
+            // Define dataset values
+            var datasetValues = {
+                labels: ['Development', 'IT Support', 'Marketing'], // Labels for each department
+                datasets: [completedTasksDataset] // Pie chart only needs one dataset
+            };
+
+            // Define chart options
+            var chartOptions = {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                weight: 'bold',
+                                size: 15
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Render the pie chart
+            new Chart(pieCanvas, {
+                type: 'pie', // Change to 'pie' chart type
+                data: datasetValues,
+                options: chartOptions
+            });
+        });
+
+
+        $(function () {
+            var barCanvas = document.getElementById("barchart2");
+
+            // Pass data from the Razor model using JSON
+            var taskTypes = @Html.Raw(Json.Serialize(Model));
+            console.log("Task Types (Raw Data):", taskTypes); // Log the raw data
+
+            // Initialize data arrays
+            var notCompletedDevelopment = Array(10).fill(0); // Completed counts for skill levels 1 to 10
+            var notCompletedIT = Array(10).fill(0); // Not completed counts for skill levels 1 to 10
+            var notCompletedMarketing = Array(10).fill(0); // Not completed counts for skill levels 1 to 10
+
+            // Process task allocations
+            if (taskTypes && taskTypes.length > 0) {
+                taskTypes.forEach(function (task) {
+                    var skillIndex = task.skillLevel - 1; // Convert skill level to array index
+                    if (task.completed == false) {
+                        if (task.department == "Development") {
+                            notCompletedDevelopment[skillIndex]++;
+                        }
+                        else if (task.department == "IT Support") {
+                            notCompletedIT[skillIndex]++;
+                        }
+                        else if (task.department == "Marketing") {
+                            notCompletedMarketing[skillIndex]++;
+                        }
+                    }
+                });
+            }
+
+            // Create datasets
+            var notCompletedDevelopmentDataset = {
+                label: 'Development',
+                data: notCompletedDevelopment,
+                backgroundColor: 'rgb(75, 192, 192)',
+                borderWidth: 1
+            };
+
+            var notCompletedITDataset = {
+                label: 'IT',
+                data: notCompletedIT,
+                backgroundColor: 'rgb(172, 252, 97)',
+                borderWidth: 1
+            };
+
+            var notCompletedMarketingDataset = {
+                label: 'Marketing',
+                data: notCompletedMarketing,
+                backgroundColor: 'rgb(172, 126, 214)',
+                borderWidth: 1
+            };
+
+            // Define dataset values
+            var datasetValues = {
+                labels: Array.from({ length: 10 }, (_, i) => i + 1), // Skill levels 1 to 10
+                datasets: [notCompletedDevelopmentDataset, notCompletedITDataset, notCompletedMarketingDataset]
+            };
+
+            // Define chart options
+            var chartOptions = {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Skill Levels',
+                            font: {
+                                weight: 'bold',
+                                size: 20 // Make the x-axis title bold
+                            }
+                        },
+
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,// Increment by 1
+                            font: {
+                                weight: 'bold',
+                                size: 15// Make the y-axis title bold
+                            }
+                        },
+                        grace: '10%',
+                        title: {
+                            display: true,
+                            text: 'Not Completed Tasks',
+                            font: {
+                                weight: 'bold',
+                                size: 20// Make the y-axis title bold
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            // This more specific font property overrides the global property
+                            font: {
+                                weight: 'bold',
+                                size: 20
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Render the bar chart
+            new Chart(barCanvas, {
+                type: 'bar',
+                data: datasetValues,
+                options: chartOptions
+            });
+        });
+
+        $(function () {
+            var pieCanvas = document.getElementById("piechart2"); // Change canvas element name to reflect pie chart
+
+            // Pass data from the Razor model using JSON
+            var taskTypes = @Html.Raw(Json.Serialize(Model));
+            console.log("Task Types (Raw Data):", taskTypes); // Log the raw data
+
+            // Initialize data for not completed tasks in each department
+            var notCompletedDevelopment = 0; // Count for not completed Development tasks
+            var notCompletedIT = 0; // Count for not completed IT tasks
+            var notCompletedMarketing = 0; // Count for not completed Marketing tasks
+
+            // Process task allocations
+            if (taskTypes && taskTypes.length > 0) {
+                taskTypes.forEach(function (task) {
+                    if (task.completed == false) {
+                        if (task.department == "Development") {
+                            notCompletedDevelopment++;
+                        }
+                        else if (task.department == "IT Support") {
+                            notCompletedIT++;
+                        }
+                        else if (task.department == "Marketing") {
+                            notCompletedMarketing++;
+                        }
+                    }
+                });
+            }
+
+            // Create datasets for pie chart
+            var notCompletedTasksDataset = {
+                label: 'Not Completed Tasks by Department',
+                data: [notCompletedDevelopment, notCompletedIT, notCompletedMarketing], // Data for the departments
+                backgroundColor: ['rgb(75, 192, 192)', 'rgb(172, 252, 97)', 'rgb(172, 126, 214)'], // Colors for each slice
+                borderWidth: 1
+            };
+
+            // Define dataset values
+            var datasetValues = {
+                labels: ['Development', 'IT Support', 'Marketing'], // Labels for each department
+                datasets: [notCompletedTasksDataset] // Pie chart only needs one dataset
+            };
+
+            // Define chart options
+            var chartOptions = {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                weight: 'bold',
+                                size: 15
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Render the pie chart
+            new Chart(pieCanvas, {
+                type: 'pie', // Change to 'pie' chart type
+                data: datasetValues,
+                options: chartOptions
+            });
+        });
+
+
+
+
+
+
+    </script>
+}
+
+
+
+
+

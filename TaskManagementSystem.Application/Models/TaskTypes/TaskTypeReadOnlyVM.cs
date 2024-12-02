@@ -26,8 +26,9 @@ public class TaskTypeReadOnlyVM
     [DisplayName("Description")]
 	public string Description { get; set; } = string.Empty;
 
-    [DisplayName("Task Allocation")]
+    [DisplayName("Task Condition")]
     public bool Allocated { get; set; }
+    public bool Completed { get; set; }
 
     public int? TaskAllocationId { get; set; }
 

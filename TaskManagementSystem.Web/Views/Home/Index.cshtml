@@ -5,3 +5,105 @@
 <div class="text-center">
     <h1 class="display-4">Welcome to the Task Management System</h1>
 </div>
+
+@if (User.IsInRole(Roles.Administrator))
+{
+    <h1>Guidelines for the administrator role.</h1>
+    <br />
+    <div class="content-section">
+        <h2>1. Working Days</h2>
+        <p>As an administrator you will have to create the days and the time period, that the company is open. This is neccessary in order for the staff to be aware of the schedule and the task manager to create tasks for each day.
+           Here are some rules:
+        </p>
+        <ul>
+            <li><strong>One working day per date</strong></li>
+            <li><strong>Time period:</strong> Start time must be earlier than End time.</li>
+        </ul>
+    </div>
+    <div class="content-section">
+        <h2>2. Task Allocation</h2>
+        <p>The Task manager is responsible to create the appropriate tasks within the working days, the administrator is responsible for allocating the tasks using the task allocation system to the available employees. 
+           Here are some rules for tha task allocation system:
+        </p>
+        <ul>
+            <li><strong>One employee per task:</strong> A task can only be assigned to one employee.</li>
+            <li><strong>Task within working period:</strong> If the task is outside the working period then it cannot be allocated to an employee.</li>
+            <li><strong>Employee Skill Level and Department:</strong> The task is allocated to an employee with the minimul skill level that is required for the task and from the same department.</li>
+            <li><strong>Employee Availability:</strong> If an employee is allocated to a task, he cannot be assigned another one with overlaping periods, if no employee with the appropriate skill level and department is available 
+                then the task cannot be allocated and it has to be edited or deallocate an employee from another one.</li>
+            <li><strong>Deallocation:</strong> A task is deallocated when the administrator applies the deallocation function, when the task is edited or deleted.</li>
+            <li><strong>Employee Notification:</strong> The employee is automatically notified about changes in his schedule, meaning task allocations or deallocations.</li>
+        </ul>
+    </div>
+}
+
+
+@if (User.IsInRole(Roles.TaskManager))
+{
+    <h1>Guidelines for the task manager role.</h1>
+    <br />
+    <div class="content-section">
+        <h2>1. Working Days</h2>
+        <p>
+            The administrator you will have to create the days and the time period, that the company is open. This is neccessary in order for the staff to be aware of the schedule and the task manager to create tasks for each day.
+            Here are some rules:
+        </p>
+        <ul>
+            <li><strong>One working day per date</strong></li>
+            <li><strong>Time period:</strong> Start time must be earlier than End time.</li>
+        </ul>
+    </div>
+    <div class="content-section">
+        <h2>2. Task Allocation</h2>
+        <p>
+            The Task manager is responsible to create the appropriate tasks within the working days, the administrator is responsible for allocating the tasks using the task allocation system to the available employees.
+            Here are some rules for tha task allocation system:
+        </p>
+        <ul>
+            <li><strong>One employee per task:</strong> A task can only be assigned to one employee.</li>
+            <li><strong>Task within working period:</strong>If the task is outside the working period then it cannot be allocated to an employee.</li>
+            <li><strong>Employee Skill Level and Department:</strong> The task is allocated to an employee with the minimul skill level that is required for the task and from the same department.</li>
+            <li>
+                <strong>Employee Availability</strong>If an employee is allocated to a task, he cannot be assigned another one with overlaping periods, if no employee with the appropriate skill level and department is available
+                then the task cannot be allocated and it has to be edited or deallocate an employe from another one.
+            </li>
+            <li><strong>Deallocation:</strong>A task is deallocated when the administrator applies the deallocation function, when the task is edited or deleted.</li>
+            <li><strong>Employee Notification:</strong>The employee is automatically notified about changes in his schedule, meaning task allocations or deallocations.</li>
+        </ul>
+    </div>
+}
+
+@if (User.IsInRole(Roles.Employee))
+{
+    <h1>Guidelines for the employee role.</h1>
+    <br />
+    <div class="content-section">
+        <h2>1. Working Days</h2>
+        <p>
+            The administrator you will have to create the days and the time period, that the company is open. This is neccessary in order for the staff to be aware of the schedule and the task manager to create tasks for each day.
+            Here are some rules:
+        </p>
+        <ul>
+            <li><strong>One working day per date</strong></li>
+            <li><strong>Time period:</strong> Start time must be earlier than End time.</li>
+        </ul>
+    </div>
+    <div class="content-section">
+        <h2>2. Task Allocation</h2>
+        <p>
+            The Task manager is responsible to create the appropriate tasks within the working days, the administrator is responsible for allocating the tasks using the task allocation system to the available employees.
+            Here are some rules for tha task allocation system:
+        </p>
+        <ul>
+            <li><strong>One employee per task:</strong> A task can only be assigned to one employee.</li>
+            <li><strong>Task within working period:</strong>If the task is outside the working period then it cannot be allocated to an employee.</li>
+            <li><strong>Employee Skill Level and Department:</strong> The task is allocated to an employee with the minimul skill level that is required for the task and from the same department.</li>
+            <li>
+                <strong>Employee Availability</strong>If an employee is allocated to a task, he cannot be assigned another one with overlaping periods, if no employee with the appropriate skill level and department is available
+                then the task cannot be allocated and it has to be edited or deallocate an employe from another one.
+            </li>
+            <li><strong>Deallocation:</strong>A task is deallocated when the administrator applies the deallocation function, when the task is edited or deleted.</li>
+            <li><strong>Employee Notification:</strong>The employee is automatically notified about changes in his schedule, meaning task allocations or deallocations.</li>
+        </ul>
+    </div>
+}

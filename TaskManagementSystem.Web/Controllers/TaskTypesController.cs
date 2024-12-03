@@ -45,7 +45,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         return View(viewData);
     }
 
-    [Authorize]
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     public async Task<IActionResult> StatisticsVisual(DateOnly? fromDate, DateOnly? toDate, TimeOnly? fromTime, TimeOnly? toTime)
     {
         var viewData = await _taskTypesService.GetAll(fromDate, toDate, fromTime, toTime, null, null, null, null);

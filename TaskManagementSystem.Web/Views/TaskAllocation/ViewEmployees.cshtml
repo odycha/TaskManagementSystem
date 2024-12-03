@@ -98,9 +98,17 @@ else
 						<td>
 							@Html.DisplayFor(Model => item.Email)
 						</td>
-						<td>
-							<a asp-action="ViewEmployeeAllocations" asp-route-id="@item.Id" class="btn btn-primary">View Task Allocations</a>
-						</td>
+						@if ((User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager)) || (User.IsInRole(Roles.Employee) && User.Identity.Name == item.Email))
+						{
+							<td>
+								<a asp-action="ViewEmployeeAllocations" asp-route-id="@item.Id" class="btn btn-primary">View Task Allocations</a>
+							</td>
+						}
+						else if (User.IsInRole(Roles.Employee)){
+							<td>
+								<a asp-action="SendMailToEmployee" asp-route-id="@item.Id" class="btn btn-success">Send Mail</a>
+							</td>
+						}
 					</tr>
 				}
 			</tbody>

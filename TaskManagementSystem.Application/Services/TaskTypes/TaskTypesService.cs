@@ -149,6 +149,7 @@ public class TaskTypesService(
                 Completed = data.Completed,
                 employeeListVm = new EmployeeListVM
                 {
+                    Id = employee.Id,
                     FirstName = employee.FirstName,
                     LastName = employee.LastName,
                     DepartmentName = employee.DepartmentName,

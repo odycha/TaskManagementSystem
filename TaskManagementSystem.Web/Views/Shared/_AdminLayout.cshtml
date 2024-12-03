@@ -48,16 +48,6 @@
                                 <span class="hide-menu ms-2 ps-1">Home</span>
                             </a>
                         </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link sidebar-link danger-hover-bg"
-                               asp-controller="Home" asp-action="Privacy"
-                               aria-expanded="false">
-                                <span class="aside-icon p-2 bg-light-dark rounded-3">
-                                    <i class="ti ti-spy fs-7 text-dark"></i>
-                                </span>
-                                <span class="hide-menu ms-2 ps-1">Privacy</span>
-                            </a>
-                        </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="sidebar-item">
@@ -130,9 +120,6 @@
                                     <span class="hide-menu ms-2 ps-1">View Employees</span>
                                 </a>
                             </li>
-                        }
-                        @if (User.Identity.IsAuthenticated)
-                        {
                             <li class="sidebar-item">
                                 <a class="sidebar-link sidebar-link success-hover-bg"
                                    asp-controller="TaskTypes" asp-action="StatisticsVisual"
@@ -143,6 +130,10 @@
                                     <span class="hide-menu ms-2 ps-1">Statistics</span>
                                 </a>
                             </li>
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+               
                             <li class="sidebar-item">
                                 <a class="sidebar-link sidebar-link danger-hover-bg"
                                    asp-controller="TaskAllocation" asp-action="SendMailToEmployee"
@@ -183,7 +174,23 @@
                         }
                        
                     </ul>
-                    
+                    <ul id="sidebarnav" class="mb-4 pb-2">
+                        <li class="nav-small-cap">
+                            <i class="ti ti-dots nav-small-cap-icon fs-5"></i>
+                            <span class="hide-menu">Extra Information</span>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link sidebar-link danger-hover-bg"
+                               asp-controller="Home" asp-action="Privacy"
+                               aria-expanded="false">
+                                <span class="aside-icon p-2 bg-light-dark rounded-3">
+                                    <i class="ti ti-spy fs-7 text-dark"></i>
+                                </span>
+                                <span class="hide-menu ms-2 ps-1">Privacy</span>
+                            </a>
+                        </li>
+                    </ul>
+                   
                 </nav>
                 <!-- End Sidebar navigation -->
             </div>
@@ -199,12 +206,6 @@
                         <li class="nav-item d-block d-xl-none">
                             <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
                                 <i class="ti ti-menu-2"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-icon-hover" href="javascript:void(0)">
-                                <i class="ti ti-bell-ringing"></i>
-                                <div class="notification bg-primary rounded-circle"></div>
                             </a>
                         </li>
                     </ul>
@@ -233,6 +234,7 @@
                             </ul>
                         </div>
                     }
+                    
                 </nav>
             </header>
             <!--  Header End -->
@@ -253,6 +255,7 @@
     <script src="~/lib/moment.js/moment.min.js"></script>
     <script src="~/lib/timepicker/jquery.timepicker.min.js"></script>
     <script src="~/lib/chart.js/chart.umd.js"></script>
+    <script src="~/lib/sweetalert/sweetalert.min.js"></script>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src='~/lib/fullcalendar/index.global.min.js'></script>

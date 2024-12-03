@@ -151,108 +151,110 @@ If you use only !Model.Any(), it will not account for the possibility of Model b
 
 else
 {
-    <div class="table-responsive">  <!--Wrap the table in a div to ensure responsiveness on smaller screens-->
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Name)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.StartDate)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.StartTime)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.EndTime)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Department)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.SkillLevel)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Allocated)
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+    <div class="container mt-4">
+        <div class="table-responsive">  <!--Wrap the table in a div to ensure responsiveness on smaller screens-->
+            <table class="table table-hover">
+                <thead>
                     <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.StartDateFormatted)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.StartTime)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.EndTime)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Department)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.SkillLevel)
-                        </td>
-                        <td>
-                            @if (item.Allocated == false)
-						    {
-							    <span class="badge rounded-pill bg-danger">
-                                    <i class="bi bi-x-circle"></i> Not Allocated   <!--Instead of plain text, add icons to the allocated/unallocated badges for better visual clarity. Note: Requires including Bootstrap Icons in your layout if not already done -->
+                        <th>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StartDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StartTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EndTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Department)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.SkillLevel)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Allocated)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StartDateFormatted)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.StartTime)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EndTime)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Department)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SkillLevel)
+                            </td>
+                            <td>
+                                @if (item.Allocated == false)
+						        {
+							        <span class="badge rounded-pill bg-danger">
+                                        <i class="bi bi-x-circle"></i> Not Allocated   <!--Instead of plain text, add icons to the allocated/unallocated badges for better visual clarity. Note: Requires including Bootstrap Icons in your layout if not already done -->
                                                           
-                                </span>
-                            }
-                            else
-                            {
-                                if (item.Completed == true)
-                                {
-                                    <span class="badge rounded-pill bg-info">
-                                        <i class="bi bi-check-circle"></i> Completed
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="badge rounded-pill bg-success">
-                                        <i class="bi bi-check-circle"></i> Allocated
-                                    </span>
-                                }
-						    }
-                        </td>
-                        <td>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary ps-2 pe-2">Details</a>
-                            @if (item.Completed == false)
-                            {
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning ps-2 pe-2">Edit</a>
-                            }
-                            @if (User.IsInRole(Roles.Administrator))
-                            {
-                                @if (item.Allocated == false)
+                                    if (item.Completed == true)
+                                    {
+                                        <span class="badge rounded-pill bg-info">
+                                            <i class="bi bi-check-circle"></i> Completed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill bg-success">
+                                            <i class="bi bi-check-circle"></i> Allocated
+                                        </span>
+                                    }
+						        }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary ps-2 pe-2">Details</a>
+                                @if (item.Completed == false)
                                 {
-                                    <a asp-action="AllocateTask" asp-controller="TaskAllocation" asp-route-id="@item.Id" class="btn btn-success ps-2 pe-2">Allocate</a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning ps-2 pe-2">Edit</a>
                                 }
-                            }
-                            @if (item.Completed == false)
-                            {
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger ps-2 pe-2">Delete</a>
-                            }
+                                @if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
+                                {
+                                    @if (item.Allocated == false)
+                                    {
+                                        <a asp-action="AllocateTask" asp-controller="TaskAllocation" asp-route-id="@item.Id" class="btn btn-success ps-2 pe-2">Allocate</a>
+                                    }
+                                }
+                                @if (item.Completed == false)
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger ps-2 pe-2">Delete</a>
+                                }
                            
-                            <!--asp-route-id: Defines a route parameter named id.
-                             The value of the route parameter is set to item.Id (server-side code), where item is an object in the current context, and Id is its property.Generated URL: 
-                             When the Razor view is rendered, the asp-route-id generates a URL that includes the id as a query string or route parameter, depending on the route configuration.
-                            For example:
-                            Assume the item.Id has a value of 5.
-                            If the route template for the Edit action is /ControllerName/Edit/{id}, the generated HTML link will look like this:-->
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                                <!--asp-route-id: Defines a route parameter named id.
+                                 The value of the route parameter is set to item.Id (server-side code), where item is an object in the current context, and Id is its property.Generated URL: 
+                                 When the Razor view is rendered, the asp-route-id generates a URL that includes the id as a query string or route parameter, depending on the route configuration.
+                                For example:
+                                Assume the item.Id has a value of 5.
+                                If the route template for the Edit action is /ControllerName/Edit/{id}, the generated HTML link will look like this:-->
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 }
 

@@ -28,7 +28,7 @@
 				<br />
 				<div class="form-group">
 					<label asp-for="Subject" class="control-label"></label>
-					<input asp-for="Subject" class="form-control" />
+					<input asp-for="Subject" class="form-control" value="@ViewBag.taskName"/>
 					<span asp-validation-for="Subject" class="text-danger"></span>
 				</div>
 				<br />
@@ -41,14 +41,7 @@
 				<div>
 					<input type="hidden" asp-for="FromEmail" />
 					<input type="submit" value="Send Email" class="btn btn-success" />
-					@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
-					{
-						<button onclick="window.history.back();" class="btn btn-secondary">Back</button>
-					}
-					@if (User.IsInRole(Roles.Employee))
-					{
-						<a asp-action="ViewSignedInEmployeeAllocations" class="btn btn-primary">Back to Calendar</a>
-					}
+					<button onclick="window.history.back();" class="btn btn-secondary">Back</button>
 				</div>
 			</form>
 		</div>

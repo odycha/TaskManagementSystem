@@ -125,6 +125,19 @@
 		</div>
 
 </form>
+<div>
+	<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
+	@if (User.IsInRole(Roles.Administrator))
+	{
+		<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
+		<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
+	}
+	@if (User.IsInRole(Roles.TaskManager))
+	{
+		<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
+		<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b">Send Email to Administrator</a>
+	}
+</div>
 <hr />
 @if (Model.TaskAllocations.Any())
 {
@@ -202,7 +215,7 @@
 							}
 						</td>
 						<td>
-							@if(User.IsInRole(Roles.Administrator) && allocation.TaskType.Completed == false){
+								@if ((User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager)) && allocation.TaskType.Completed == false){
 								<a asp-action="Deallocate" class="btn btn-warning" asp-route-id="@allocation.Id">Deallocate </a>
 							}
 						</td>
@@ -213,15 +226,26 @@
 		</div>
 
 		<div>
-			<h1 class="text-center mt-4">Statistics</h1> <!-- Add top margin to add space between the table and the heading -->
+			<h1 class="text-center mt-4">Task Statistics</h1> <!-- Add top margin to add space between the table and the heading -->
 		</div>
-	
+		<br />
 
 			<div class="mb-4 d-flex justify-content-center">
 				<div style="width: 1000px;">
-					<canvas id="barchart"></canvas>
+					<canvas id="barchart1"></canvas>
 				</div>
 			</div>
+		<br />
+		<div>
+			<h1 class="text-center mt-4">Working Hours</h1> <!-- Add top margin to add space between the table and the heading -->
+		</div>
+		<br />
+
+		<div class="mb-4 d-flex justify-content-center">
+			<div style="width: 1000px;">
+				<canvas id="barchart2"></canvas>
+			</div>
+		</div>
 	
 		
 
@@ -235,19 +259,7 @@ else
 	<br />
 }
 <br />
-<div>
-	<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
-	@if (User.IsInRole(Roles.Administrator))
-	{
-		<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
-		<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
-	}
-	@if (User.IsInRole(Roles.TaskManager))
-	{
-		<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
-		<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b">Send Email to Administrator</a>
-	}
-</div>
+
 
 
 @section Scripts {
@@ -349,7 +361,7 @@ else
 
 		//Chart.js
 		$(function () {
-			var barCanvas = document.getElementById("barchart");
+			var barCanvas = document.getElementById("barchart1");
 
 			// Pass data from the Razor model using JSON
 			var taskAllocations = @Html.Raw(Json.Serialize(Model.TaskAllocations));
@@ -433,6 +445,111 @@ else
 					legend: {
 						position: 'top',
 								 labels: {
+							// This more specific font property overrides the global property
+							font: {
+								weight: 'bold',
+								size: 20
+							}
+						}
+					}
+				}
+			};
+
+			// Render the bar chart
+			new Chart(barCanvas, {
+				type: 'bar',
+				data: datasetValues,
+				options: chartOptions
+			});
+		});
+
+		$(function () {
+			var barCanvas = document.getElementById("barchart2");
+
+			// Pass data from the Razor model using JSON
+			var taskAllocations = @Html.Raw(Json.Serialize(Model.TaskAllocations));
+
+
+			// Initialize data arrays
+			var workingHours = Array(10).fill(0); // Completed counts for skill levels 1 to 10
+
+			// Process task allocations
+			if (taskAllocations && taskAllocations.length > 0) {
+				taskAllocations.forEach(function (task) {
+					if (task.taskType && task.taskType.skillLevel >= 1 && task.taskType.skillLevel <= 10) {
+						var skillIndex = task.taskType.skillLevel - 1; // Convert skill level to array index
+						// Correctly calculate working hours
+						if (task.taskType.completed) {
+							var endTimeParts = task.taskType.endTime.split(':'); // Assuming time is in HH:mm format
+							var startTimeParts = task.taskType.startTime.split(':'); // Assuming time is in HH:mm format
+
+							// Convert to minutes
+							var endMinutes = parseInt(endTimeParts[0]) * 60 + parseInt(endTimeParts[1]);
+							var startMinutes = parseInt(startTimeParts[0]) * 60 + parseInt(startTimeParts[1]);
+
+							// Calculate hours
+							var hours = (endMinutes - startMinutes) / 60; // Convert minutes back to hours
+							workingHours[skillIndex] += hours; // Accumulate hours for this skill level
+						}
+
+					}
+				});
+			}
+
+			// Create datasets
+			var workingHoursDataset = {
+				label: 'Working Hours',
+				data: workingHours,
+				backgroundColor: 'rgb(75, 192, 192)',
+				borderWidth: 1
+			};
+
+
+			// Define dataset values
+			var datasetValues = {
+				labels: Array.from({ length: 10 }, (_, i) => i + 1), // Skill levels 1 to 10
+				datasets: [workingHoursDataset]
+			};
+
+			// Define chart options
+			var chartOptions = {
+				responsive: true,
+				scales: {
+					x: {
+						title: {
+							display: true,
+							text: 'Skill Levels',
+							font: {
+								weight: 'bold',
+								size: 20 // Make the x-axis title bold
+							}
+						},
+
+					},
+					y: {
+						beginAtZero: true,
+						ticks: {
+							stepSize: 10,// Increment by 1
+							font: {
+								weight: 'bold',
+								size: 15// Make the y-axis title bold
+							}
+						},
+						grace: '10%',
+						title: {
+							display: true,
+							text: 'Working Hours',
+							font: {
+								weight: 'bold',
+								size: 20// Make the y-axis title bold
+							}
+						}
+					}
+				},
+				plugins: {
+					legend: {
+						position: 'top',
+						labels: {
 							// This more specific font property overrides the global property
 							font: {
 								weight: 'bold',

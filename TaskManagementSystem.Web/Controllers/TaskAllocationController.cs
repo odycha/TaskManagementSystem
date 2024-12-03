@@ -8,10 +8,10 @@ namespace TaskManagementSystem.Web.Controllers;
 public class TaskAllocationController(ITaskAllocationsService _taskAllocationService) : Controller
 {
 
-	//Get
-	//a task will be allocated to the lower skilled employee possible, who is available and in the same department
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> AllocateTask(int? id)
+    //Get
+    //a task will be allocated to the lower skilled employee possible, who is available and in the same department
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> AllocateTask(int? id)
 	{
 		if (id == null)
 		{
@@ -33,8 +33,8 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	//Post
 	[HttpPost]
 	[AutoValidateAntiforgeryToken]
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> AllocateTask(int id)
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> AllocateTask(int id)
 	{
 		bool employeeNotified = false;
         try
@@ -57,8 +57,8 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 		return RedirectToAction("Index", "TaskTypes", new { employeeNotified });
 	}
 
-	[Authorize(Roles = Roles.Employee)]
-	public async Task<IActionResult> CompleteTask(int id)
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> CompleteTask(int id)
 	{
 		bool taskManagerNotified = await _taskAllocationService.Complete(id);
 		return RedirectToAction(nameof(ViewSignedInEmployeeAllocations), new {taskManagerNotified});
@@ -74,8 +74,8 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 		return View(employees);
 	}
 
-	[Authorize(Roles = Roles.Employee)]
-	public async Task<IActionResult> ViewSignedInEmployeeAllocations(bool? taskManagerNotified)
+    [Authorize(Roles = $"{Roles.Employee}")]
+    public async Task<IActionResult> ViewSignedInEmployeeAllocations(bool? taskManagerNotified)
 	{
 		var allocations = await _taskAllocationService.GetEmployeeAllocations();
 		ViewBag.taskManagerNotified = taskManagerNotified;
@@ -105,9 +105,10 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 
 	//get
 	[Authorize]
-	public async Task<IActionResult> SendMailToEmployee(string? id)
+	public async Task<IActionResult> SendMailToEmployee(string? id, string? taskName)
 	{
 		var employeeVm = await _taskAllocationService.GetEmployee(id);
+		ViewBag.taskName = taskName;
 		return View(employeeVm);
 	}
 
@@ -138,9 +139,9 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	}
 
 
-	//get
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> Deallocate(int? id)
+    //get
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> Deallocate(int? id)
 	{
 		if(id == null)
 		{
@@ -162,8 +163,8 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 	//post
 	[HttpPost, ActionName("Deallocate")]
 	[ValidateAntiForgeryToken]
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> DeallocateConfirmed(int id)
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> DeallocateConfirmed(int id)
 	{
 		bool employeeNotified = await _taskAllocationService.Remove(id);
 		return (RedirectToAction("Index", "TaskTypes", new {employeeNotified}));

@@ -7,7 +7,7 @@
 <h1>Working Dates Summary</h1>
 
 <div class="button-container">
-    @if (User.IsInRole(Roles.Administrator))
+    @if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
     {
         <p>
             <a asp-action="Create" class="btn btn-primary">Create New Working Day</a>

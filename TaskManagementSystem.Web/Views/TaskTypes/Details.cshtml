@@ -123,7 +123,7 @@
 			<br />
 		</dl>
 	</div>
-	@if (User.IsInRole(Roles.Administrator))
+	@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
 	{
 		if (Model.Completed == false)
 		{
@@ -132,12 +132,12 @@
 	}
 	@if (User.IsInRole(Roles.TaskManager))
 	{
-		<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.employeeListVm.Id">Send Email to Employee</a>
+		<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.employeeListVm.Id" asp-route-taskName=@($"Task: {Model.Name}")>Send Email to Employee</a>
 	}
 }
 else
 {
-	@if (User.IsInRole(Roles.Administrator))
+	@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
 	{
 		<a asp-controller="TaskAllocation" asp-action="AllocateTask" class="btn btn-success" asp-route-id="@Model.Id">Allocate Task</a>
 	}
@@ -146,11 +146,11 @@ else
 
 @if (User.IsInRole(Roles.Administrator))
 {
-	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
+	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404" asp-route-taskName=@($"Task: {Model.Name}")>Send Email to Task Manager</a>
 }
 @if (User.IsInRole(Roles.TaskManager))
 {
-	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b">Send Email to Administrator</a>
+	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b" asp-route-taskName=@($"Task: {Model.Name}")>Send Email to Administrator</a>
 }
 @if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
 {
@@ -160,17 +160,56 @@ else
 @if (User.IsInRole(Roles.Employee))
 {
 	<a asp-controller="TaskAllocation" asp-action="ViewSignedInEmployeeAllocations" class="btn btn-info">Back to Calendar</a>
-	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
+	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404" asp-route-taskName=@($"Task: {Model.Name}")>Send Email to Task Manager</a>
 	if(Model.Completed == false)
 	{
-		<a asp-controller="TaskAllocation" asp-action="CompleteTask" class="btn btn-success" asp-route-id="@Model.Id">Complete Task</a>
+		<button data-id="@Model.Id" class="btn btn-success completeBtn">Complete Task</button>
 	}
 	
 }
+
+<form id="completeForm" asp-action="CompleteTask" asp-controller="TaskAllocation">
+	<input type="hidden" name="id" id="taskId" />
+</form>
+
+@section Scripts {
+	<script>
+		$(function () {
+			//Creating a button click event. (what pattern looking for?) --> (class cancelBtn)
+			//I am watching all the elements with the certain class for a click event
+			$('.completeBtn').click(
+				//defining what should happen at a click event. e event element
+				//The function is going to fire the confirmation task -
+				//i could use JS alert("are you sure")but not easy to style
+				function(e){
+					//swal object to start process - buttons by default are going
+					//to give a confimation or not
+					swal({
+						title: "Are you sure?",
+						text: "Are you sure you want to complete this task? (If completed an automatic notification will be send to the task manager)",
+						icon: "warning",
+						buttons: true,
+						dangerMode: false
+					}).then((confirm) => {
+						if (confirm){
+							//$(this) the element that triggered the event
+							var btn = $(this);
+							var id = btn.data("id");
+							//find the element with this id
+							$('#taskId').val(id);
+							//find the form with this id and submit
+							$('#completeForm').submit();
+						}
+					});
+				}
+			);
+		});
+	</script>
+}
+
 
 
 
 <!--1.col-sm-2: This column occupies 2/12 of the row's width (16.67% of the row) on small devices and larger.
 2. col-sm-10: This column occupies 10/12 of the row's width (83.33% of the row) on small devices and larger.
 Together, they span the full row (2 + 10 = 12).-->
-

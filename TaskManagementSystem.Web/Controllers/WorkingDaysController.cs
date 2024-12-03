@@ -13,9 +13,9 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
     }
 
 
-	//Get
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> Create(
+    //Get
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> Create(
         bool comingFromAllocation = false, 
         DateOnly? workingDayDate = null)
     {
@@ -28,8 +28,8 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
     //Post
     [HttpPost]
     [ValidateAntiForgeryToken]
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> Create(WorkingDayCreateVM workingDayCreate)
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> Create(WorkingDayCreateVM workingDayCreate)
     {
         if (ModelState.IsValid)
         {
@@ -53,9 +53,9 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
         return View(workingDayCreate);
     }
 
-	//Get
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> Edit (int? id)
+    //Get
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> Edit (int? id)
     {
         if (id == null)
         {
@@ -72,8 +72,8 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
     //post
     [HttpPost]
     [ValidateAntiForgeryToken]
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> Edit (WorkingDayCreateVM model)
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> Edit (WorkingDayCreateVM model)
     {
         if (ModelState.IsValid)
         {
@@ -96,10 +96,9 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
         return View(model);
 	}
 
-	//Get
-	[Authorize(Roles = Roles.Administrator)]
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> Delete(int? id)
+    //Get
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> Delete(int? id)
 	{
         if(id == null)
         {
@@ -115,8 +114,8 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
 	//Post
 	[HttpPost, ActionName("Delete")]
 	[ValidateAntiForgeryToken]
-	[Authorize(Roles = Roles.Administrator)]
-	public async Task<IActionResult> DeleteConfirmed(int id)
+    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
 	{
         await _workingDaysService.Remove(id);
         return RedirectToAction(nameof(Index));

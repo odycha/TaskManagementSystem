@@ -72,13 +72,13 @@ else
         </div>
         <br />
         <div class="mb-4 d-flex justify-content-center">
-            <div style="width: 1000px;">
+            <div style="width: 1200px;">
                 <canvas id="barchart1"></canvas>
             </div>
         </div>
         <br />
         <div class="mb-4 d-flex justify-content-center">
-            <div style="width: 600px;">
+            <div style="width: 500px;">
                 <canvas id="piechart1"></canvas>
             </div>
         </div>
@@ -89,14 +89,25 @@ else
         </div>
         <br />
         <div class="mb-4 d-flex justify-content-center">
-            <div style="width: 1000px;">
+            <div style="width: 1200px;">
                 <canvas id="barchart2"></canvas>
             </div>
         </div>
         <br />
         <div class="mb-4 d-flex justify-content-center">
-            <div style="width: 600px;">
+            <div style="width: 500px;">
                 <canvas id="piechart2"></canvas>
+            </div>
+        </div>
+        <br />
+        <hr />
+        <div>
+            <h1 class="text-center mt-4">Working Hours for each Department</h1>
+        </div>
+        <br />
+        <div class="mb-4 d-flex justify-content-center">
+            <div style="width: 1200px;">
+                <canvas id="barchart3"></canvas>
             </div>
         </div>
     </div>
@@ -570,9 +581,130 @@ else
             });
         });
 
+        $(function () {
+            var barCanvas = document.getElementById("barchart3");
 
+            // Pass data from the Razor model using JSON
+            var taskTypes = @Html.Raw(Json.Serialize(Model));
+            console.log("Task Types (Raw Data):", taskTypes); // Log the raw data
 
+            // Initialize data arrays
+            var workingHoursDevelopment = Array(10).fill(0); // Completed counts for skill levels 1 to 10
+            var workingHoursIT = Array(10).fill(0); // Not completed counts for skill levels 1 to 10
+            var workingHoursMarketing = Array(10).fill(0); // Not completed counts for skill levels 1 to 10
 
+            // Process task allocations
+            if (taskTypes && taskTypes.length > 0) {
+                taskTypes.forEach(function (task) {
+                    var skillIndex = task.skillLevel - 1; // Convert skill level to array index
+                    if (task.completed == true) {
+                        var endTimeParts = task.endTime.split(':'); // Assuming time is in HH:mm format
+                        var startTimeParts = task.startTime.split(':'); // Assuming time is in HH:mm format
+                        
+                        // Convert to minutes
+                        var endMinutes = parseInt(endTimeParts[0]) * 60 + parseInt(endTimeParts[1]);
+                        var startMinutes = parseInt(startTimeParts[0]) * 60 + parseInt(startTimeParts[1]);
+                        
+                        // Calculate hours
+                        var hours = (endMinutes - startMinutes) / 60; // Convert minutes back to hours
+
+                        if (task.department == "Development") {
+                            workingHoursDevelopment[skillIndex] += hours;
+                        }
+                        else if (task.department == "IT Support") {
+                            workingHoursIT[skillIndex] += hours;
+                        }
+                        else if (task.department == "Marketing") {
+                            workingHoursMarketing[skillIndex] += hours;
+                        }
+                    }
+                });
+            }
+
+            // Create datasets
+            var workingHoursDevelopmentDataset = {
+                label: 'Development',
+                data: workingHoursDevelopment,
+                backgroundColor: 'rgb(75, 192, 192)',
+                borderWidth: 1
+            };
+
+            var workingHoursITDataset = {
+                label: 'IT',
+                data: workingHoursIT,
+                backgroundColor: 'rgb(172, 252, 97)',
+                borderWidth: 1
+            };
+
+            var workingHoursMarketingDataset = {
+                label: 'Marketing',
+                data: workingHoursMarketing,
+                backgroundColor: 'rgb(172, 126, 214)',
+                borderWidth: 1
+            };
+
+            // Define dataset values
+            var datasetValues = {
+                labels: Array.from({ length: 10 }, (_, i) => i + 1), // Skill levels 1 to 10
+                datasets: [workingHoursDevelopmentDataset, workingHoursITDataset, workingHoursMarketingDataset]
+            };
+
+            // Define chart options
+            var chartOptions = {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Skill Levels',
+                            font: {
+                                weight: 'bold',
+                                size: 20 // Make the x-axis title bold
+                            }
+                        },
+
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 10,// Increment by 1
+                            font: {
+                                weight: 'bold',
+                                size: 15// Make the y-axis title bold
+                            }
+                        },
+                        grace: '10%',
+                        title: {
+                            display: true,
+                            text: 'Working Hours',
+                            font: {
+                                weight: 'bold',
+                                size: 20// Make the y-axis title bold
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            // This more specific font property overrides the global property
+                            font: {
+                                weight: 'bold',
+                                size: 20
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Render the bar chart
+            new Chart(barCanvas, {
+                type: 'bar',
+                data: datasetValues,
+                options: chartOptions
+            });
+        });
 
 
     </script>

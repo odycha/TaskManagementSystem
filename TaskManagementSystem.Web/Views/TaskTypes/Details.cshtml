@@ -2,6 +2,16 @@
 
 @{
 	ViewData["Title"] = "Details";
+	// Read the 'employeeNotified' query parameter from the URL
+	bool employeeNotified = Context.Request.Query.ContainsKey("employeeNotified") && Context.Request.Query["employeeNotified"] == "False";
+}
+
+@if (employeeNotified)
+{
+	<div class="alert alert-warning">
+		<strong>Notice:</strong> Something went wrong with the email service and the employee didn't get his automatic notification. Please contact technical support.
+	</div>
+	<br />
 }
 
 <h1>Detailed view for Task: @Model.Name</h1>
@@ -123,55 +133,62 @@
 			<br />
 		</dl>
 	</div>
-	@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
-	{
-		if (Model.Completed == false)
+	<div class="d-flex gap-2">
+		@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
 		{
-			<a asp-controller="TaskAllocation" asp-action="Deallocate" class="btn btn-danger" asp-route-id="@Model.TaskAllocationId">Deallocate Task</a>
+			if (Model.Completed == false)
+			{
+				<button data-id="@Model.TaskAllocationId" class="btn btn-danger deallocateBtn ps-2 pe-2">Deallocate Task</button>
+				<form id="deallocateForm" asp-action="Deallocate" asp-controller="TaskAllocation">
+					<input type="hidden" name="id" id="taskId" />
+				</form>
+			}
 		}
-	}
-	@if (User.IsInRole(Roles.TaskManager))
-	{
-		<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.employeeListVm.Id" asp-route-taskName=@($"Task: {Model.Name}")>Send Email to Employee</a>
-	}
+		@if (User.IsInRole(Roles.TaskManager))
+		{
+			<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.employeeListVm.Id" asp-route-taskName=@($"Task: {Model.Name}, Date: {Model.StartDate}")>Send Email to Employee</a>
+		}
+		
+	</div>
+	<br />
 }
 else
 {
 	@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
 	{
-		<a asp-controller="TaskAllocation" asp-action="AllocateTask" class="btn btn-success" asp-route-id="@Model.Id">Allocate Task</a>
+		<div class="d-flex">
+			<button data-id="@Model.Id" class="btn btn-success allocateBtn ps-2 pe-2">Allocate</button>
+			<form id="allocateForm" asp-action="AllocateTask" asp-controller="TaskAllocation">
+				<input type="hidden" name="id" id="taskId" />
+			</form>
+		</div>
+		<br />
 	}
 }
 
-
-@if (User.IsInRole(Roles.Administrator))
-{
-	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404" asp-route-taskName=@($"Task: {Model.Name}")>Send Email to Task Manager</a>
-}
-@if (User.IsInRole(Roles.TaskManager))
-{
-	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b" asp-route-taskName=@($"Task: {Model.Name}")>Send Email to Administrator</a>
-}
-@if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager))
-{
-	<a asp-action="Index" class="btn btn-primary">Back to List</a>
-	<a asp-action="CalendarIndex" class="btn btn-info">Task Calendar</a>
-}
-@if (User.IsInRole(Roles.Employee))
-{
-	<a asp-controller="TaskAllocation" asp-action="ViewSignedInEmployeeAllocations" class="btn btn-info">Back to Calendar</a>
-	<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404" asp-route-taskName=@($"Task: {Model.Name}")>Send Email to Task Manager</a>
-	if(Model.Completed == false)
+<div class="d-flex gap-2">
+	@if (User.IsInRole(Roles.Administrator))
 	{
-		<button data-id="@Model.Id" class="btn btn-success completeBtn">Complete Task</button>
+		<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404" asp-route-taskName=@($"Task: {Model.Name}, Date: {Model.StartDate}")>Send Email to Task Manager</a>
 	}
+	@if (User.IsInRole(Roles.TaskManager))
+	{
+		<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b" asp-route-taskName=@($"Task: {Model.Name}, Date: {Model.StartDate}")>Send Email to Administrator</a>
+	}
+	@if (User.IsInRole(Roles.Employee))
+	{
+		<a asp-controller="TaskAllocation" asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404" asp-route-taskName=@($"Task: {Model.Name}, Date: {Model.StartDate}")>Send Email to Task Manager</a>
+		if(Model.Completed == false)
+		{
+			<button data-id="@Model.Id" class="btn btn-success completeBtn">Complete Task</button>
+			<form id="completeForm" asp-action="CompleteTask" asp-controller="TaskAllocation">
+				<input type="hidden" name="id" id="taskId" />
+			</form>
+		}
 	
-}
-
-<form id="completeForm" asp-action="CompleteTask" asp-controller="TaskAllocation">
-	<input type="hidden" name="id" id="taskId" />
-</form>
-
+	}
+	<button onclick="window.history.back();" class="btn btn-primary">Back</button>
+</div>
 @section Scripts {
 	<script>
 		$(function () {
@@ -203,6 +220,76 @@ else
 					});
 				}
 			);
+
+			$(document).on('click', '.allocateBtn', function (e) {
+				e.preventDefault(); // Prevent default button behavior
+
+				const taskId = $(this).data("id"); // Get task ID from button
+				const allocateForm = $('#allocateForm'); // Select the allocate form
+
+				swal({
+					title: "Are you sure?",
+					text: "Are you sure you want to allocate this task? Once allocated, the employee will be notified automatically.",
+					icon: "warning",
+					buttons: {
+						cancel: {
+							text: "Cancel",
+							value: false,
+							visible: true,
+							className: "btn btn-secondary",
+							closeModal: true
+						},
+						confirm: {
+							text: "Yes, Allocate",
+							value: true,
+							visible: true,
+							className: "btn btn-success",
+							closeModal: true
+						}
+					},
+					dangerMode: false
+				}).then((confirm) => {
+					if (confirm) {
+						allocateForm.find('#taskId').val(taskId); // Set task ID in the form
+						allocateForm.submit(); // Submit the form
+					}
+				});
+			});
+
+			$(document).on('click', '.deallocateBtn', function (e) {
+				e.preventDefault(); // Prevent default button behavior
+
+				const taskId = $(this).data("id"); // Get task ID from button
+				const allocateForm = $('#deallocateForm'); // Select the allocate form
+
+				swal({
+					title: "Are you sure?",
+					text: "Are you sure you want to deallocate this task? Once deallocated, the employee will be notified automatically.",
+					icon: "warning",
+					buttons: {
+						cancel: {
+							text: "Cancel",
+							value: false,
+							visible: true,
+							className: "btn btn-secondary",
+							closeModal: true
+						},
+						confirm: {
+							text: "Yes, Deallocate",
+							value: true,
+							visible: true,
+							className: "btn btn-danger",
+							closeModal: true
+						}
+					},
+					dangerMode: false
+				}).then((confirm) => {
+					if (confirm) {
+						allocateForm.find('#taskId').val(taskId); // Set task ID in the form
+						allocateForm.submit(); // Submit the form
+					}
+				});
+			});
 		});
 	</script>
 }

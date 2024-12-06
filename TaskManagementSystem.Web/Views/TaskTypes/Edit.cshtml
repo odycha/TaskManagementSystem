@@ -60,9 +60,11 @@
 				<span asp-validation-for="Description" class="text-danger"></span>
 			</div>
 			<br />
-			<input type="submit" value="Save Task" class="btn btn-warning" />
-			<a asp-action="Index" class="btn btn-primary">Back to List</a>
+				<input type="submit" value="Save Task" class="btn btn-warning" />
+				<br />
 		</form>
+			<br />
+			<button onclick="window.history.back();" class="btn btn-primary">Back</button>
 	</div>
 </div>
 

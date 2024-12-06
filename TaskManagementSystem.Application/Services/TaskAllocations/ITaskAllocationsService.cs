@@ -11,7 +11,6 @@ public interface ITaskAllocationsService
 	Task<EmployeeEmailVM> GetEmployee(string id);
 	Task<List<TaskAllocationVM>> GetEmployeeAllocations();
 	Task<List<EmployeeListVM>> GetEmployees(string? department, int? minimumSkillLevel);
-	Task<TaskTypeReadOnlyVM> GetUnallocatedTask(int taskId);
 	Task<bool> Remove(int allocationId);
 	Task<bool> SendEmail(EmployeeEmailVM model);
 }

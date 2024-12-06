@@ -1,8 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace TaskManagementSystem.Data;
+﻿namespace TaskManagementSystem.Data;
 
 public class TaskType
 {

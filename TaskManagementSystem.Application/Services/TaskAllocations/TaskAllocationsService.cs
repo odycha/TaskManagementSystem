@@ -198,15 +198,6 @@ public class TaskAllocationsService(
         return employeeAllocationVm;
     }
 
-    public async Task<TaskTypeReadOnlyVM> GetUnallocatedTask(int taskId)
-    {
-        var data = await _context.TaskTypes
-            .Where(q => q.Id == taskId)
-            .SingleOrDefaultAsync();
-        var model = _mapper.Map<TaskTypeReadOnlyVM>(data);
-        return model;
-    }
-
     public async Task<TaskAllocationVM> GetAllocation(int allocationId)
     {
         var data = await _context.TaskAllocations
@@ -322,6 +313,10 @@ public class TaskAllocationsService(
             {
                 return employeeNotified;
             }
+        }
+        else
+        {
+            throw new FileNotFoundException();
         }
         return employeeNotified = true;
     }

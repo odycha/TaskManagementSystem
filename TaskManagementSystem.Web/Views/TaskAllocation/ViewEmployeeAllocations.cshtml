@@ -2,6 +2,16 @@
 
 @{
 	ViewData["Title"] = "ViewEmployeeAllocations";
+	// Read the 'employeeNotified' query parameter from the URL
+	bool employeeNotified = Context.Request.Query.ContainsKey("employeeNotified") && Context.Request.Query["employeeNotified"] == "False";
+}
+
+@if (employeeNotified)
+{
+	<div class="alert alert-warning">
+		<strong>Notice:</strong> Something went wrong with the email service and the employee didn't get his automatic notification. Please contact technical support.
+	</div>
+	<br />
 }
 
 <h1> Here are the task allocations for the employee : @Model.FirstName @Model.LastName</h1>
@@ -216,7 +226,10 @@
 						</td>
 						<td>
 								@if ((User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager)) && allocation.TaskType.Completed == false){
-								<a asp-action="Deallocate" class="btn btn-warning" asp-route-id="@allocation.Id">Deallocate </a>
+									<button data-id="@allocation.Id" class="btn btn-danger deallocateBtn ps-2 pe-2">Deallocate</button>
+									<form id="deallocateForm" asp-action="Deallocate" asp-controller="TaskAllocation">
+										<input type="hidden" name="id" id="taskId" />
+									</form>
 							}
 						</td>
 						</tr>
@@ -354,6 +367,41 @@ else
 					$("#toTime").timepicker("option", "minTime", null); // Clear "toTime" minTime if "fromTime" is cleared
 				} else if (target.hasClass("toTime")) {
 					$("#fromTime").timepicker("option", "maxTime", null); // Clear "fromTime" maxTime if "toTime" is cleared
+				}
+			});
+		});
+
+		$(document).on('click', '.deallocateBtn', function (e) {
+			e.preventDefault(); // Prevent default button behavior
+
+			const taskId = $(this).data("id"); // Get task ID from button
+			const allocateForm = $('#deallocateForm'); // Select the allocate form
+
+			swal({
+				title: "Are you sure?",
+				text: "Are you sure you want to deallocate this task? Once deallocated, the employee will be notified automatically.",
+				icon: "warning",
+				buttons: {
+					cancel: {
+						text: "Cancel",
+						value: false,
+						visible: true,
+						className: "btn btn-secondary",
+						closeModal: true
+					},
+					confirm: {
+						text: "Yes, Deallocate",
+						value: true,
+						visible: true,
+						className: "btn btn-danger",
+						closeModal: true
+					}
+				},
+				dangerMode: false
+			}).then((confirm) => {
+				if (confirm) {
+					allocateForm.find('#taskId').val(taskId); // Set task ID in the form
+					allocateForm.submit(); // Submit the form
 				}
 			});
 		});

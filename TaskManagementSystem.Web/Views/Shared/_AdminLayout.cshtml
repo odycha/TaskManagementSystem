@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewData["Title"] Task Management System</title>
     @await RenderSectionAsync("Styles", required: false)
-    <link rel="shortcut icon" type="image/png" href="~/images/hard-work.png" />
+    <link rel="shortcut icon" type="image/png" href="~/images/done.png" />
     <link rel="stylesheet" href="~/css/styles.min.css" /> <!--styles replaces bootstrap -->
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.min.css" />
     <link rel="stylesheet" href="~/lib/timepicker/jquery.timepicker.min.css">
@@ -29,7 +29,7 @@
             <div class="scroll-sidebar" data-simplebar>
                 <div class="d-flex mb-4 align-items-center justify-content-between">
                     <a asp-controller="Home" asp-action="Index" class="text-nowrap logo-img ms-0 ms-md-1">
-                        <img src="~/images/hard-work.png" width="180" alt="">
+                        <img src="~/images/done.png" width="150" alt="Tasks">
                     </a>
                     <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
                         <i class="ti ti-x fs-8"></i>

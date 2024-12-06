@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.WebUtilities;
 using TaskManagementSystem.Application.Services.TaskAllocations;
 using TaskManagementSystem.Common.Static;
 
@@ -7,39 +8,20 @@ namespace TaskManagementSystem.Web.Controllers;
 [Authorize]
 public class TaskAllocationController(ITaskAllocationsService _taskAllocationService) : Controller
 {
-
-    //Get
-    //a task will be allocated to the lower skilled employee possible, who is available and in the same department
-    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
-    public async Task<IActionResult> AllocateTask(int? id)
-	{
-		if (id == null)
-		{
-			return NotFound();
-		}
-		var taskType = await _taskAllocationService.GetUnallocatedTask(id.Value);
-		if (taskType == null)
-		{
-			return NotFound();
-		}
-        //If the task is completed or allocated redirect to home
-        if (taskType.Completed == true || taskType.Allocated == true)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-        return View(taskType);
-	}
-
 	//Post
 	[HttpPost]
 	[AutoValidateAntiforgeryToken]
     [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
-    public async Task<IActionResult> AllocateTask(int id)
+    public async Task<IActionResult> AllocateTask(int? id)
 	{
-		bool employeeNotified = false;
+        if (id == null)
+        {
+            return NotFound();
+        }
+        bool employeeNotified = false;
         try
 		{
-			employeeNotified = await _taskAllocationService.AllocateTask(id);
+			employeeNotified = await _taskAllocationService.AllocateTask(id.Value);
 		}
 		catch (WorkingDayNotFoundException e)
 		{
@@ -53,11 +35,25 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 		{
 			return RedirectToAction("Index", "TaskTypes", new { noSuitableEmployee = true, taskName = e.Message });
 		}
+		catch (InvalidOperationException e)
+		{
+			return NotFound();
+		}
+	
+		// Assuming 'refererUrl' is the previous URL you are redirecting to
+		string refererUrl = Request.Headers["Referer"].ToString();
 
+		// Append the 'employeeNotified' query parameter to the referer URL
+		if (!string.IsNullOrEmpty(refererUrl))
+		{
+			refererUrl = QueryHelpers.AddQueryString(refererUrl, "employeeNotified", employeeNotified.ToString());
+			return Redirect(refererUrl);
+		}
+		// Fallback if referer is unavailable
 		return RedirectToAction("Index", "TaskTypes", new { employeeNotified });
 	}
 
-    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
+	[Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     public async Task<IActionResult> CompleteTask(int id)
 	{
 		bool taskManagerNotified = await _taskAllocationService.Complete(id);
@@ -138,38 +134,39 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
         }
 	}
 
-
-    //get
-    [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
-    public async Task<IActionResult> Deallocate(int? id)
-	{
-		if(id == null)
-		{
-			return NotFound();
-		}
-		var allocationVm = await _taskAllocationService.GetAllocation(id.Value);
-		if (allocationVm == null)
-		{
-			return NotFound();
-		}
-        //If the task is completed redirect to home
-        if (allocationVm.TaskType.Completed == true)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-        return View(allocationVm);
-	}
-
 	//post
 	[HttpPost, ActionName("Deallocate")]
 	[ValidateAntiForgeryToken]
     [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
-    public async Task<IActionResult> DeallocateConfirmed(int id)
+    public async Task<IActionResult> DeallocateConfirmed(int? id)
 	{
-		bool employeeNotified = await _taskAllocationService.Remove(id);
-		return (RedirectToAction("Index", "TaskTypes", new {employeeNotified}));
+		bool employeeNotified = false;
+		if (id == null)
+		{
+			return NotFound();
+		}
+		try
+		{
+			employeeNotified = await _taskAllocationService.Remove(id.Value);
+		}
+		catch(Exception e)
+		{
+			return NotFound();
+		}
+		// Assuming 'refererUrl' is the previous URL you are redirecting to
+		string refererUrl = Request.Headers["Referer"].ToString();
+
+		// Append the 'employeeNotified' query parameter to the referer URL
+		if (!string.IsNullOrEmpty(refererUrl))
+		{
+			refererUrl = QueryHelpers.AddQueryString(refererUrl, "employeeNotified", employeeNotified.ToString());
+			return Redirect(refererUrl);
+		}
+		// Fallback if referer is unavailable
+		return RedirectToAction("Index", "TaskTypes", new { employeeNotified });
 	}
 }
+
 
 
 

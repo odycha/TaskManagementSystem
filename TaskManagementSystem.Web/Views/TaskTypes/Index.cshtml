@@ -5,7 +5,12 @@ modelItem is just the parameter name in the lambda expression, and while it’s 
 	ViewData["Title"] = "Index";
 }
 
-
+<style>
+    .container-fluid {
+        display: flex;
+        justify-content: space-between; /* This could create space around items */
+    }
+</style>
 
 <div class="d-flex flex-wrap align-items-center gap-3">
     <h1>Tasks</h1>
@@ -235,7 +240,10 @@ else
                                 {
                                     @if (item.Allocated == false)
                                     {
-                                        <a asp-action="AllocateTask" asp-controller="TaskAllocation" asp-route-id="@item.Id" class="btn btn-success ps-2 pe-2">Allocate</a>
+                                        <button data-id="@item.Id" class="btn btn-success allocateBtn ps-2 pe-2">Allocate</button>
+                                        <form id="allocateForm" asp-action="AllocateTask" asp-controller="TaskAllocation">
+                                            <input type="hidden" name="id" id="taskId" />
+                                        </form>
                                     }
                                 }
                                 @if (item.Completed == false)
@@ -352,6 +360,43 @@ else
                 $("#fromTime").timepicker("option", "maxTime", null); // Clear "fromTime" maxTime if "toTime" is cleared
             }
         });
+
+
+            $(document).on('click', '.allocateBtn', function (e) {
+                e.preventDefault(); // Prevent default button behavior
+
+                const taskId = $(this).data("id"); // Get task ID from button
+                const allocateForm = $('#allocateForm'); // Select the allocate form
+
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure you want to allocate this task? Once allocated, the employee will be notified automatically.",
+                    icon: "warning",
+                    buttons: {
+                        cancel: {
+                            text: "Cancel",
+                            value: false,
+                            visible: true,
+                            className: "btn btn-secondary",
+                            closeModal: true
+                        },
+                        confirm: {
+                            text: "Yes, Allocate",
+                            value: true,
+                            visible: true,
+                            className: "btn btn-success",
+                            closeModal: true
+                        }
+                    },
+                    dangerMode: false
+                }).then((confirm) => {
+                    if (confirm) {
+                        allocateForm.find('#taskId').val(taskId); // Set task ID in the form
+                        allocateForm.submit(); // Submit the form
+                    }
+                });
+            });
+
     });
 </script>
 }

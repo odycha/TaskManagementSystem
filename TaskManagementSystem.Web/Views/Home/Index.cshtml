@@ -108,3 +108,10 @@
         </ul>
     </div>
 }
+
+@if (!User.Identity.IsAuthenticated)
+{
+     <div class="content-section text-center">
+        <h2>Please Log in or if you dont have an account register!</h2>
+    </div>
+}

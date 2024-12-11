@@ -225,12 +225,21 @@
 							}
 						</td>
 						<td>
-								@if ((User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager)) && allocation.TaskType.Completed == false){
-									<button data-id="@allocation.Id" class="btn btn-danger deallocateBtn ps-2 pe-2">Deallocate</button>
-									<form id="deallocateForm" asp-action="Deallocate" asp-controller="TaskAllocation">
+							@if ((User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.TaskManager)) && allocation.TaskType.Completed == false){
+								<button data-id="@allocation.Id" class="btn btn-danger deallocateBtn ps-2 pe-2">Deallocate</button>
+								<form id="deallocateForm" asp-action="Deallocate" asp-controller="TaskAllocation">
+									<input type="hidden" name="id" id="taskId" />
+								</form>
+							}
+							@if (User.IsInRole(Roles.Employee)){
+								if(allocation.TaskType.Completed == false)
+								{
+									<button data-id="@allocation.TaskType.Id" class="btn btn-success completeBtn ps-2 pe-2">Complete</button>
+									<form id="completeForm" asp-action="CompleteTask" asp-controller="TaskAllocation">
 										<input type="hidden" name="id" id="taskId" />
 									</form>
-							}
+								}
+							}	
 						</td>
 						</tr>
 					}
@@ -405,6 +414,47 @@ else
 				}
 			});
 		});
+
+		$(function () {
+			// Creating a button click event for the 'completeBtn' class
+			$('.completeBtn').click(function (e) {
+				e.preventDefault(); // Prevent default button behavior
+
+				// Show SweetAlert confirmation dialog
+				swal({
+					title: "Are you sure?",
+					text: "Are you sure you want to complete this task? (If completed, an automatic notification will be sent to the task manager)",
+					icon: "warning",
+					buttons: {
+						cancel: {
+							text: "Cancel",
+							value: false,
+							visible: true,
+							className: "btn btn-secondary", // Style for Cancel button
+							closeModal: true
+						},
+						confirm: {
+							text: "Yes, Complete",
+							value: true,
+							visible: true,
+							className: "btn btn-success", // Style for Confirm button
+							closeModal: true
+						}
+					},
+					dangerMode: false
+				}).then((confirm) => {
+					if (confirm) {
+						var btn = $(this);
+						var id = btn.data("id");
+						$('#taskId').val(id); // Set the task ID in the hidden input field
+						$('#completeForm').submit(); // Submit the form
+					}
+				});
+			});
+		});
+
+
+
 
 
 		//Chart.js

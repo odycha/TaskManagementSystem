@@ -53,11 +53,22 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 		return RedirectToAction("Index", "TaskTypes", new { employeeNotified });
 	}
 
-	[Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
-    public async Task<IActionResult> CompleteTask(int id)
+	[Authorize]
+	public async Task<IActionResult> CompleteTask(int id)
 	{
 		bool taskManagerNotified = await _taskAllocationService.Complete(id);
-		return RedirectToAction(nameof(ViewSignedInEmployeeAllocations), new {taskManagerNotified});
+
+		// Assuming 'refererUrl' is the previous URL you are redirecting to
+		string refererUrl = Request.Headers["Referer"].ToString();
+
+		// Append the 'employeeNotified' query parameter to the referer URL
+		if (!string.IsNullOrEmpty(refererUrl))
+		{
+			refererUrl = QueryHelpers.AddQueryString(refererUrl, "employeeNotified", taskManagerNotified.ToString());
+			return Redirect(refererUrl);
+		}
+		// Fallback if referer is unavailable
+		return RedirectToAction("Index", "TaskTypes", new { taskManagerNotified });
 	}
 
 	//View All Employees

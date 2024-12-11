@@ -70,6 +70,7 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
         }
         return View(viewData);
     }
+
     [Authorize(Roles = $"{Roles.Administrator},{Roles.TaskManager}")]
     // GET:
     public async Task<IActionResult> Create()

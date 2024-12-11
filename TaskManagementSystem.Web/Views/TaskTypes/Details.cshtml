@@ -187,7 +187,8 @@ else
 		}
 	
 	}
-	<button onclick="window.history.back();" class="btn btn-primary">Back</button>
+	<button onclick="goBack();" class="btn btn-primary">Back</button>
+
 </div>
 @section Scripts {
 	<script>
@@ -291,6 +292,29 @@ else
 				});
 			});
 		});
+
+
+		function goBack() {
+			const referrer = document.referrer;
+
+			// Check if there's a previous page (referrer is not empty)
+			if (referrer) {
+				const url = new URL(referrer);
+
+				// List of query parameters to remove
+				const paramsToRemove = ['employeeNotified', 'noSuitableEmployee', 'taskName', 'taskOutOfWorkingPeriod'];
+
+				// Remove specified parameters from the referrer URL
+				paramsToRemove.forEach(param => url.searchParams.delete(param));
+
+				// Navigate to the updated URL
+				window.location.href = url.toString();
+			} else {
+				// Fallback: if no referrer, navigate to the index page
+				window.location.href = "/TaskTypes";
+			}
+		}
+
 	</script>
 }
 

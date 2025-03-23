@@ -7,7 +7,7 @@ public class TaskTypeCreateVM
 {
     //Id not necessary it is created in the data model
     [Required]
-    [Length(4, 150, ErrorMessage = "You have violated the length requirements")]
+    [Length(4, 30, ErrorMessage = "You have violated the length requirements")]
     public string Name { get; set; } = string.Empty;
 
     [Required]

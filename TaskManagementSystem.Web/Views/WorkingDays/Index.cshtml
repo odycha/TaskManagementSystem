@@ -35,8 +35,8 @@ else
                 {
                     id = item.Id,
                     title = $"{item.StartTime} - {item.EndTime}", // Combine comments 
-                    start = $"{item.DayFormatted}T{item.StartTime:hh\\:mm}", // Start datetime in ISO 8601
-                    end = $"{item.DayFormatted}T{item.EndTime:hh\\:mm}",// End datetime in ISO 8601
+                    start = $"{item.DayFormatted}T{item.StartTime:HH\\:mm}", // Start datetime in ISO 8601
+                    end = $"{item.DayFormatted}T{item.EndTime:HH\\:mm}",// End datetime in ISO 8601
                     date = item.Day,
                     allDay = false, // Ensure events are treated as timed events
                     backgroundColor = "#007bff", // Custom background color

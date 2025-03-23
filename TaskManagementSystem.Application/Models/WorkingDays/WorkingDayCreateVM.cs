@@ -19,3 +19,4 @@ public class WorkingDayCreateVM
     public string Comments { get; set; } = string.Empty;
 
 }
+ 

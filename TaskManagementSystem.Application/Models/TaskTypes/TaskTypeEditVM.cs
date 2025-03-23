@@ -31,6 +31,6 @@ public class TaskTypeEditVM
 
 	public bool Completed { get; set; }
 
-    //TODO: WHEN I EDIT A TASK IT BECOMES ALLOCATED AND ALL ALLOCATIONS GET DELETED
+    
 
 }

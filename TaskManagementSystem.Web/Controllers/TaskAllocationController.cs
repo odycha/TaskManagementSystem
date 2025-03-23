@@ -91,7 +91,7 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 
 	//View allocations for a specific employee
 	[Authorize]
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!SOSOSOSOSOSOSOSOSOSO!!!! THE ID IN THE VIEW MUST HAVE THE SAME NAME WITH THE ACTION
+	//THE ID IN THE VIEW MUST HAVE THE SAME NAME WITH THE ACTION
 	public async Task<IActionResult> ViewEmployeeAllocations(string? id, DateOnly? fromDate, 
 		DateOnly? toDate, TimeOnly? fromTime,TimeOnly? toTime, int? minimumSkillLevel, bool? isCompleted)
 	{
@@ -182,18 +182,3 @@ public class TaskAllocationController(ITaskAllocationsService _taskAllocationSer
 
 
 
-//TODO: Unallocate task AT TASKS PAGE
-
-//TODO: WHEN LOOKING AT AN EMPLOYEE EXCEPT FROM VIEWING ALLOCATIONS - SEE ALSO A CALENDAR WITH HIS AVAILABILITY??
-
-//TODO: SHOW WORKING DAYS IN A CALENDAR and when click show details
-
-//TODO: SHOW TASKS IN A CALENDAR PER MONTH AND PER DEPARTMENT
-
-//TODO: When we edit a task but we dont change anything and press save than i mustnt become unallocated
-
-//TODO: FILTER TASKS BASED ON DATE FROM-TO DEPARTMENT MINIMUMSKILLLEVEL AND ALLOCATIONSTATUS ----- REMOVE UNALLOCATED TASKS PAGE
-
-//TODO: MAKE A CALENDAR FOR ADMIN VIEW TO SEE EMPLOYEE AVAILABILITY PER DAY AND PER DEPARTMENT AND SKILL LEVEL
-
-//TODO: EMAIL FAILURE EXCEPTION HANDLING

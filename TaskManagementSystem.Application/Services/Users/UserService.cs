@@ -30,19 +30,3 @@ namespace TaskManagementSystem.Application.Services.Users
 }
 
 
-
-
-
-//_userManager: This is an instance of UserManager<ApplicationUser>, which
-//is part of ASP.NET Identity and provides methods for managing users.
-//_httpContextAccessor.HttpContext
-//_httpContextAccessor: This is an instance of the IHttpContextAccessor interface, which provides access to the current HttpContext.
-//HttpContext: Represents the HTTP request context, including information about the user, request headers, response, and more. This is specific to the current web request.
-//2. HttpContext?.User
-//User: This property of HttpContext represents the security context of the current user. It contains the claims-based identity of the user who made the request.
-//The ?. operator ensures that this only proceeds if HttpContext is not null (i.e., there's an active HTTP request)._httpContextAccessor.HttpContext
-//_httpContextAccessor: This is an instance of the IHttpContextAccessor interface, which provides access to the current HttpContext.
-//HttpContext: Represents the HTTP request context, including information about the user, request headers, response, and more. This is specific to the current web request.
-//2. HttpContext?.User
-//User: This property of HttpContext represents the security context of the current user. It contains the claims-based identity of the user who made the request.
-//The ?. operator ensures that this only proceeds if HttpContext is not null (i.e., there's an active HTTP request).

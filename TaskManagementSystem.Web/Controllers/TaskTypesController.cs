@@ -84,7 +84,6 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TaskTypeCreateVM taskTypeCreate)
     {
-        //TODO: I do not check if the Task exists because there can be 2 tasks with the same name and date - check if all fields the same?
         if (ModelState.IsValid)
         {
             try
@@ -185,6 +184,3 @@ public class TaskTypesController(ITaskTypesService _taskTypesService) : Controll
 
 
 
-
-//TODO: Create on click workday on calendar
-//TODO: At employee view unallocate button for a task

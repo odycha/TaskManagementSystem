@@ -122,11 +122,3 @@ public class WorkingDaysController(IWorkingDaysService _workingDaysService) : Co
     }
 }
 
-
-
-
-
-
-//TODO: ONCLICK IN CALENDAR SHOW WORKING DAY DETAILS
-
-//TODO: FOR A WORKING DAY ADD WORKING HOURS AND MAYBE A TASK COULD BE ASSIGNED TO A TIME SLOT EG: 0900-1200

@@ -15,13 +15,3 @@ namespace LeaveManagementSystem.Application.MappingProfiles
     }
 }
 
-
-
-
-
-
-
-//It is common practise to have multiple automapper profiles(in program.cs we stated
-//get all the automapper profiles from the whole assembly)
-//we renamed the automapper to leavetypeautomapper and created a seperate 
-//automapper profile for the leaveallocation

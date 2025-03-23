@@ -3,6 +3,9 @@
 @{
 	ViewData["Title"] = "Edit";
 }
+@{
+	string[] DepartmentNames = Departments.DepartmentNames;
+}
 
 @if (ViewBag.invalidTime != null && (bool)ViewBag.invalidTime)
 {
@@ -43,11 +46,18 @@
 				<span asp-validation-for="EndTime" class="text-danger"></span>
 			</div>
 			<br />
-			<div class="form-group">
-				<label asp-for="Department" class="control-label"></label>
-				<input asp-for="Department" class="form-control" />
-				<span asp-validation-for="Department" class="text-Danger"></span>
-			</div>
+			<label asp-for="Department" class="control-label"></label>
+			@foreach (var depName in DepartmentNames)
+			{
+				<div class="form-check">
+					<input class="form-check-input" type="radio" asp-for="Department" value="@depName">
+					<label class="form-check-label" asp-for="Department">
+						@depName
+					</label>
+				</div>
+			}
+			<span asp-validation-for="Department" class="text-danger"></span>
+			<br />
 			<div class="form-group">
 				<label asp-for="SkillLevel" class="control-label"></label>
 				<input asp-for="SkillLevel" class="form-control" />

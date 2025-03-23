@@ -21,8 +21,7 @@ public class TaskType
     public bool Completed { get; set; }
 
     // One-to-One relationship
-    //we edited the LeaveTypes so we can access the related TaskAllocation
-    //? there might not be any related ones
+    //edited the TaskTypes so we can access the related TaskAllocation
     public TaskAllocation? TaskAllocation { get; set; }
 
 

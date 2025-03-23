@@ -11,7 +11,7 @@ public class EmployeeEmailVM : EmployeeListVM
     public string? FromEmail { get; set; } 
 
     [Required]
-	[StringLength(40, MinimumLength = 2, ErrorMessage = "Subject must be between 2 and 40 characters")]
+	[StringLength(60, MinimumLength = 2, ErrorMessage = "Subject must be between 2 and 60 characters")]
 	public string Subject { get; set; }
 
 	[Required]

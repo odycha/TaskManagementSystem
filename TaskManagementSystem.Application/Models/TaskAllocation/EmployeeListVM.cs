@@ -4,7 +4,6 @@ namespace TaskManagementSystem.Application.Models.TaskAllocation;
 
 public class EmployeeListVM
 {
-	//Avoiding Null Reference Issues (Empty)
 	public string Id { get; set; } = string.Empty;
 
 	[Display(Name = "First Name")]

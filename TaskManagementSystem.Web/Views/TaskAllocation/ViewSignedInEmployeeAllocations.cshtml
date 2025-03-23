@@ -76,21 +76,21 @@ else
             var calendarEl = document.getElementById('calendar');
 
             // Convert the Model data to JSON for FullCalendar events
-            var events = @Html.Raw(Json.Serialize(
-        Model.Select(item => new
-        {
-            id = item.TaskType.Id,
-            title = item.TaskType.Name,
-            start = $"{item.WorkingDay.Day:yyyy-MM-dd}T{item.WorkingDay.StartTime:hh\\:mm}",
-            end = $"{item.WorkingDay.Day:yyyy-MM-dd}T{item.WorkingDay.EndTime:hh\\:mm}",
-            color = item.TaskType.Completed ? "#07e7eb" : "#dc3545", // Tirquose for completed, red for not completed
-            extendedProps = new
+        var events = @Html.Raw(Json.Serialize(
+            Model.Select(item => new
             {
-                department = item.TaskType.Department,
-                skillLevel = item.TaskType.SkillLevel,
-                description = item.TaskType.Description
-            }
-        })
+                id = item.TaskType.Id,
+                title = $"{item.TaskType.Name}",
+                start = $"{item.TaskType.StartDate:yyyy-MM-dd}T{item.TaskType.StartTime:HH\\:mm}",
+                end = $"{item.TaskType.StartDate:yyyy-MM-dd}T{item.TaskType.EndTime:HH\\:mm}",
+                color = item.TaskType.Completed ? "#07e7eb" : "#dc3545", // Tirquose for completed, red for not completed
+                extendedProps = new
+                {
+                    department = item.TaskType.Department,
+                    skillLevel = item.TaskType.SkillLevel,
+                    description = item.TaskType.Description
+                }
+            })
         ));
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -109,7 +109,7 @@ else
                 eventTimeFormat: { // Format event times
                     hour: '2-digit',
                     minute: '2-digit',
-                    hour12: false // 24-hour format
+                    hour12: false
                 },
                 allDaySlot: false,
 

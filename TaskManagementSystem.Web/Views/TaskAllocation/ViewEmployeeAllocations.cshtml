@@ -58,6 +58,14 @@
 		</dd>
 	</dl>
 </div>
+@if (User.IsInRole(Roles.Employee))
+{
+	<br />
+	<div>
+		<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
+	</div>
+	<br />
+}
 <hr />
 <form asp-action="ViewEmployeeAllocations" method="get">
 	<!--Date Filtering-->
@@ -135,15 +143,17 @@
 		</div>
 
 </form>
+
 <div>
-	<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
 	@if (User.IsInRole(Roles.Administrator))
 	{
+		<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
 		<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
 		<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="16914ec6-4686-4c2c-ba58-5a9c3c15f404">Send Email to Task Manager</a>
 	}
 	@if (User.IsInRole(Roles.TaskManager))
 	{
+		<a asp-action="ViewEmployees" class="btn btn-primary">Back to List </a>
 		<a asp-action="SendMailToEmployee" class="btn btn-success" asp-route-id="@Model.Id">Send Email to Employee</a>
 		<a asp-action="SendMailToEmployee" class="btn btn-warning" asp-route-id="384df32d-2a7c-4147-baf1-152db746565b">Send Email to Administrator</a>
 	}
